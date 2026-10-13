@@ -631,13 +631,20 @@
         /* Painel de episódios */
         .episodes-panel { padding: 1.5rem; }
 
-        /* Seletor de temporada (dropdown) */
+        /* ── Dropdown de temporada (botão personalizado) ── */
         .seasons-bar {
             margin-bottom: 1.25rem;
+            position: relative;
         }
-        .season-select {
+
+        /* Botão principal — exibe temporada ativa + seta */
+        .season-btn {
             width: 100%;
-            padding: 0.65rem 2.5rem 0.65rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem 0.7rem 1rem;
             border-radius: 12px;
             border: 1px solid var(--border);
             background: var(--bg-card);
@@ -645,26 +652,96 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.9rem center;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            text-align: left;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            user-select: none;
         }
-        .season-select:focus {
-            outline: none;
+        .season-btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+        }
+        .season-btn.open {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px var(--accent-glow);
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
-        .season-select:hover {
-            border-color: var(--accent);
+
+        /* Ícone de seta no botão */
+        .season-btn-arrow {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .season-select option {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
+        .season-btn.open .season-btn-arrow {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        /* Label dentro do botão */
+        .season-btn-label {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Lista suspensa */
+        .season-dropdown {
+            position: absolute;
+            top: calc(100% - 1px);
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-top: none;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            overflow: hidden;
+            z-index: 200;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+            /* Animação de abertura */
+            transform-origin: top center;
+            animation: dropdownOpen 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes dropdownOpen {
+            from { opacity: 0; transform: scaleY(0.88); }
+            to   { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* Item da lista */
+        .season-option {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            font-size: 0.88rem;
             font-weight: 500;
-            padding: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            border-bottom: 1px solid var(--border);
+        }
+        .season-option:last-child { border-bottom: none; }
+        .season-option:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+        .season-option.active {
+            color: var(--accent);
+            font-weight: 700;
+            background: rgba(124, 58, 237, 0.08);
+        }
+        .season-option.active::after {
+            content: '✓';
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--accent);
         }
 
         /* Lista de episódios */
@@ -1358,6 +1435,11 @@
         }
 
         function closeModal() {
+            // Fecha qualquer dropdown de temporada aberto antes de fechar o modal
+            const openDrop = document.getElementById('seasonDropdownList');
+            if (openDrop) openDrop.remove();
+            const openBtn = document.getElementById('seasonDropdownBtn');
+            if (openBtn) { openBtn.classList.remove('open'); openBtn.setAttribute('aria-expanded','false'); }
             document.getElementById('animeModal').classList.remove('active');
         }
 
@@ -1391,8 +1473,8 @@
             document.getElementById('tabEpisodes').classList.toggle('active',  isEp);
 
             if (isEp && currentAnime) {
-                // Se ainda não carregou o select de temporadas, inicializa
-                if (!document.getElementById('seasonSelect')) {
+                // Se ainda não criou o dropdown de temporadas, inicializa
+                if (!document.getElementById('seasonDropdownBtn')) {
                     initSeasonSelect();
                 }
             }
@@ -1684,7 +1766,7 @@
         ════════════════════════════════ */
 
         /**
-         * Inicializa o select de temporadas no painel de episódios.
+         * Inicializa o dropdown de temporadas no painel de episódios.
          * Usa o currentKitsuSeasons quando disponível,
          * caso contrário cai no backend Spring Boot.
          */
@@ -1696,18 +1778,13 @@
             list.innerHTML = '<div class="episodes-loading"><div class="loading-spinner"></div><div>Carregando temporadas...</div></div>';
 
             if (currentKitsuSeasons.length > 0) {
-                // ── Modo Kitsu: monta select a partir do mapa/detecção dinâmica ──
-                buildKitsuSeasonSelect(currentKitsuSeasons);
-
-                // Determina qual temporada selecionar: a que corresponde ao animeId clicado
+                // Determina qual temporada mostrar pré-selecionada
                 const activeKitsuId = String(currentAnime.id);
                 const defaultSeason = currentKitsuSeasons.find(s => s.kitsuId === activeKitsuId)
                                    || currentKitsuSeasons[0];
 
-                // Sincroniza o select visualmente ANTES de carregar os episódios
-                const sel = document.getElementById('seasonSelect');
-                if (sel) sel.value = defaultSeason.kitsuId;
-
+                // Constrói o dropdown com a temporada correta já marcada como ativa
+                buildKitsuSeasonSelect(currentKitsuSeasons, defaultSeason.kitsuId);
                 selectKitsuSeason(defaultSeason.kitsuId);
             } else {
                 // ── Modo backend: carrega temporadas do servidor Spring Boot ──
@@ -1716,37 +1793,122 @@
         }
 
         /**
-         * Constrói o <select> de temporadas a partir da lista Kitsu.
+         * Constrói o dropdown personalizado de temporadas (botão + lista).
          */
-        function buildKitsuSeasonSelect(seasons) {
+        function buildKitsuSeasonSelect(seasons, activeKitsuId) {
             const bar = document.getElementById('seasonsBar');
             bar.innerHTML = '';
-
-            const select = document.createElement('select');
-            select.className = 'season-select';
-            select.id        = 'seasonSelect';
-            select.setAttribute('aria-label', 'Selecionar temporada');
-
-            select.innerHTML = seasons.map(s =>
-                `<option value="${escapeHtml(s.kitsuId)}">📺 ${escapeHtml(s.label)}</option>`
-            ).join('');
-
-            // Ao mudar a temporada, sincroniza e carrega episódios
-            select.addEventListener('change', () => {
-                selectKitsuSeason(select.value);
+            buildSeasonDropdown(bar, seasons, activeKitsuId, (kitsuId) => {
+                selectKitsuSeason(kitsuId);
             });
-            bar.appendChild(select);
+        }
+
+        /**
+         * Cria o markup do dropdown personalizado dentro de `container`.
+         * @param {HTMLElement} container  — elemento .seasons-bar
+         * @param {Array}       seasons    — [{label, kitsuId}] ou [{id, nome}] do backend
+         * @param {string}      activeId   — id da opção pré-selecionada
+         * @param {Function}    onSelect   — callback(id) ao escolher opção
+         */
+        function buildSeasonDropdown(container, seasons, activeId, onSelect) {
+            const activeId_ = String(activeId);
+            const active    = seasons.find(s => String(s.kitsuId || s.id) === activeId_) || seasons[0];
+            const activeLabel = active ? (active.label || getSeasonName(active)) : 'Temporadas';
+
+            // ── Botão principal ──
+            const btn = document.createElement('button');
+            btn.type      = 'button';
+            btn.className = 'season-btn';
+            btn.id        = 'seasonDropdownBtn';
+            btn.setAttribute('aria-haspopup', 'listbox');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.innerHTML = `
+                <span class="season-btn-label">📺 ${escapeHtml(activeLabel)}</span>
+                <span class="season-btn-arrow" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </span>`;
+
+            // ── Função para fechar o dropdown ──
+            function closeDropdown() {
+                const existing = document.getElementById('seasonDropdownList');
+                if (existing) existing.remove();
+                btn.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+
+            // ── Função para abrir o dropdown ──
+            function openDropdown() {
+                // Se já estiver aberto, fecha
+                if (document.getElementById('seasonDropdownList')) {
+                    closeDropdown();
+                    return;
+                }
+
+                btn.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+
+                const list = document.createElement('ul');
+                list.className = 'season-dropdown';
+                list.id        = 'seasonDropdownList';
+                list.setAttribute('role', 'listbox');
+
+                seasons.forEach(s => {
+                    const id    = String(s.kitsuId || s.id);
+                    const label = s.label || getSeasonName(s);
+                    const li    = document.createElement('li');
+                    li.className  = `season-option${id === activeId_ ? ' active' : ''}`;
+                    li.setAttribute('role', 'option');
+                    li.setAttribute('aria-selected', id === activeId_ ? 'true' : 'false');
+                    li.setAttribute('data-id', id);
+                    li.textContent = `📺 ${label}`;
+
+                    li.addEventListener('click', () => {
+                        // Atualiza o label do botão
+                        btn.querySelector('.season-btn-label').textContent = `📺 ${label}`;
+                        // Marca ativo
+                        list.querySelectorAll('.season-option').forEach(el => {
+                            el.classList.remove('active');
+                            el.setAttribute('aria-selected', 'false');
+                        });
+                        li.classList.add('active');
+                        li.setAttribute('aria-selected', 'true');
+                        closeDropdown();
+                        onSelect(id);
+                    });
+
+                    list.appendChild(li);
+                });
+
+                container.appendChild(list);
+
+                // Fecha ao clicar fora (captura no próximo tick para não capturar o click atual)
+                setTimeout(() => {
+                    document.addEventListener('click', function handler(e) {
+                        if (!container.contains(e.target)) {
+                            closeDropdown();
+                            document.removeEventListener('click', handler);
+                        }
+                    });
+                }, 0);
+            }
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openDropdown();
+            });
+
+            container.appendChild(btn);
         }
 
         /**
          * Seleciona uma temporada Kitsu:
-         * 1. Atualiza o select visualmente
-         * 2. Busca episódios Kitsu para títulos PT-BR
-         * 3. Fallback: carrega do backend Spring Boot
+         * 1. Atualiza o label do botão visualmente
+         * 2. Carrega episódios do backend + traduz títulos PT-BR
          */
         function selectKitsuSeason(kitsuId) {
-            const select = document.getElementById('seasonSelect');
-            if (select && select.value !== kitsuId) select.value = kitsuId;
             currentSeasonId = kitsuId;
             loadEpisodesForKitsuId(kitsuId);
         }
@@ -1965,17 +2127,15 @@
                     return;
                 }
 
-                // Constrói select com as temporadas do backend
-                const select = document.createElement('select');
-                select.className = 'season-select';
-                select.id = 'seasonSelect';
-                select.setAttribute('aria-label', 'Selecionar temporada');
-                select.innerHTML = currentSeasons.map(s =>
-                    `<option value="${escapeHtml(s.id)}">📺 ${escapeHtml(getSeasonName(s))}</option>`
-                ).join('');
-                select.addEventListener('change', () => selectBackendSeason(select.value));
+                // Usa o dropdown personalizado, igual ao modo Kitsu
+                const seasonsForDropdown = currentSeasons.map(s => ({
+                    id:    s.id,
+                    label: getSeasonName(s),
+                }));
                 bar.innerHTML = '';
-                bar.appendChild(select);
+                buildSeasonDropdown(bar, seasonsForDropdown, seasonsForDropdown[0].id, (id) => {
+                    selectBackendSeason(id);
+                });
 
                 selectBackendSeason(currentSeasons[0].id);
 
@@ -1986,9 +2146,7 @@
             }
         }
 
-        async function selectBackendSeason(seasonId) {
-            const select = document.getElementById('seasonSelect');
-            if (select) select.value = seasonId;
+        function selectBackendSeason(seasonId) {
             currentSeasonId = seasonId;
             loadEpisodesFromBackend(seasonId);
         }
