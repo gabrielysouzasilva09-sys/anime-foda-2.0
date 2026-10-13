@@ -1017,124 +1017,131 @@
            MAPA DE AGRUPAMENTO DE TEMPORADAS
            Relaciona cada ID Kitsu de sequência ao ID "principal"
            e define a lista completa de temporadas daquele anime.
+           IDs verificados via Kitsu API — referência MAL/Crunchyroll.
            Formato: animeId → { mainId, seasons: [{label, kitsuId}] }
         ════════════════════════════════════════════════════════════ */
-        const ANIME_SEASONS_MAP = {
-            /* ── My Hero Academia ──
-               T1: 11469 | T2: 12268 | T3: 13881 | T4: 38691 | T5: 41587 */
-            '11469': {
-                mainId: '11469',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '11469' },
-                    { label: '2ª Temporada', kitsuId: '12268' },
-                    { label: '3ª Temporada', kitsuId: '13881' },
-                    { label: '4ª Temporada', kitsuId: '38691' },
-                    { label: '5ª Temporada', kitsuId: '41587' },
-                ]
-            },
-            '12268': {
-                mainId: '11469',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '11469' },
-                    { label: '2ª Temporada', kitsuId: '12268' },
-                    { label: '3ª Temporada', kitsuId: '13881' },
-                    { label: '4ª Temporada', kitsuId: '38691' },
-                    { label: '5ª Temporada', kitsuId: '41587' },
-                ]
-            },
-            '13881': {
-                mainId: '11469',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '11469' },
-                    { label: '2ª Temporada', kitsuId: '12268' },
-                    { label: '3ª Temporada', kitsuId: '13881' },
-                    { label: '4ª Temporada', kitsuId: '38691' },
-                    { label: '5ª Temporada', kitsuId: '41587' },
-                ]
-            },
-            '38691': {
-                mainId: '11469',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '11469' },
-                    { label: '2ª Temporada', kitsuId: '12268' },
-                    { label: '3ª Temporada', kitsuId: '13881' },
-                    { label: '4ª Temporada', kitsuId: '38691' },
-                    { label: '5ª Temporada', kitsuId: '41587' },
-                ]
-            },
-            '41587': {
-                mainId: '11469',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '11469' },
-                    { label: '2ª Temporada', kitsuId: '12268' },
-                    { label: '3ª Temporada', kitsuId: '13881' },
-                    { label: '4ª Temporada', kitsuId: '38691' },
-                    { label: '5ª Temporada', kitsuId: '41587' },
-                ]
-            },
-            /* ── Attack on Titan (Shingeki no Kyojin) ──
-               T1: 7442 | T2: 8762 | T3: 9818 | T4: 41370 */
-            '7442': {
-                mainId: '7442',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '7442' },
-                    { label: '2ª Temporada', kitsuId: '8762' },
-                    { label: '3ª Temporada', kitsuId: '9818' },
-                    { label: '4ª Temporada — A Temporada Final', kitsuId: '41370' },
-                ]
-            },
-            '8762': {
-                mainId: '7442',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '7442' },
-                    { label: '2ª Temporada', kitsuId: '8762' },
-                    { label: '3ª Temporada', kitsuId: '9818' },
-                    { label: '4ª Temporada — A Temporada Final', kitsuId: '41370' },
-                ]
-            },
-            '9818': {
-                mainId: '7442',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '7442' },
-                    { label: '2ª Temporada', kitsuId: '8762' },
-                    { label: '3ª Temporada', kitsuId: '9818' },
-                    { label: '4ª Temporada — A Temporada Final', kitsuId: '41370' },
-                ]
-            },
-            '41370': {
-                mainId: '7442',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '7442' },
-                    { label: '2ª Temporada', kitsuId: '8762' },
-                    { label: '3ª Temporada', kitsuId: '9818' },
-                    { label: '4ª Temporada — A Temporada Final', kitsuId: '41370' },
-                ]
-            },
-            /* ── One Punch Man ──
-               T1: 10740 | T2: 39535 */
-            '10740': {
-                mainId: '10740',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '10740' },
-                    { label: '2ª Temporada', kitsuId: '39535' },
-                ]
-            },
-            '39535': {
-                mainId: '10740',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '10740' },
-                    { label: '2ª Temporada', kitsuId: '39535' },
-                ]
-            },
-            /* ── Fullmetal Alchemist: Brotherhood ──
-               Série única: 3936 */
-            '3936': {
-                mainId: '3936',
-                seasons: [
-                    { label: '1ª Temporada', kitsuId: '3936' },
-                ]
-            },
-        };
+        const ANIME_SEASONS_MAP = (() => {
+            // Helper para registrar todos os IDs de um anime no mapa
+            function reg(map, mainId, seasons) {
+                const entry = { mainId, seasons };
+                seasons.forEach(s => { map[s.kitsuId] = entry; });
+            }
+            const m = {};
+
+            /* ── My Hero Academia ──────────────────────────────────
+               T1:11469 T2:12268 T3:13881 T4:41971 T5:43108
+               T6:45240 T7:47232 T8(Final):49279                  */
+            reg(m, '11469', [
+                { label: '1ª Temporada',           kitsuId: '11469' },
+                { label: '2ª Temporada',           kitsuId: '12268' },
+                { label: '3ª Temporada',           kitsuId: '13881' },
+                { label: '4ª Temporada',           kitsuId: '41971' },
+                { label: '5ª Temporada',           kitsuId: '43108' },
+                { label: '6ª Temporada',           kitsuId: '45240' },
+                { label: '7ª Temporada',           kitsuId: '47232' },
+                { label: '8ª Temporada — Final',   kitsuId: '49279' },
+            ]);
+
+            /* ── Attack on Titan ───────────────────────────────────
+               T1:7442 T2:8671 T3 Pt1:13569 T3 Pt2:41982
+               Final Pt1:42422 Final Pt2:44240
+               Final Chapters Pt1:46038 Pt2:47132               */
+            reg(m, '7442', [
+                { label: '1ª Temporada',                    kitsuId: '7442'  },
+                { label: '2ª Temporada',                    kitsuId: '8671'  },
+                { label: '3ª Temporada — Parte 1',          kitsuId: '13569' },
+                { label: '3ª Temporada — Parte 2',          kitsuId: '41982' },
+                { label: 'Temporada Final — Parte 1',       kitsuId: '42422' },
+                { label: 'Temporada Final — Parte 2',       kitsuId: '44240' },
+                { label: 'Temporada Final — Capítulos Finais Pt.1', kitsuId: '46038' },
+                { label: 'Temporada Final — Capítulos Finais Pt.2', kitsuId: '47132' },
+            ]);
+
+            /* ── One Punch Man ─────────────────────────────────────
+               T1:10740  T2:12566                                 */
+            reg(m, '10740', [
+                { label: '1ª Temporada', kitsuId: '10740' },
+                { label: '2ª Temporada', kitsuId: '12566' },
+            ]);
+
+            /* ── Demon Slayer / Kimetsu no Yaiba ───────────────────
+               T1:41370  Mugen Train:45249  Ent.District:44081
+               Swordsmith Village:45866  Hashira Training:47635  */
+            reg(m, '41370', [
+                { label: '1ª Temporada',                kitsuId: '41370' },
+                { label: 'Arco do Trem Mugen',          kitsuId: '45249' },
+                { label: 'Arco do Distrito do Entretenimento', kitsuId: '44081' },
+                { label: 'Arco da Aldeia dos Ferreiros', kitsuId: '45866' },
+                { label: 'Arco do Treinamento Hashira', kitsuId: '47635' },
+            ]);
+
+            /* ── Jujutsu Kaisen ────────────────────────────────────
+               T1:42765  T2:45857                                 */
+            reg(m, '42765', [
+                { label: '1ª Temporada', kitsuId: '42765' },
+                { label: '2ª Temporada', kitsuId: '45857' },
+            ]);
+
+            /* ── Sword Art Online ──────────────────────────────────
+               T1:6589  T2:8174
+               Alicization:13893  WoU Pt1:42213  WoU Pt2:42927  */
+            reg(m, '6589', [
+                { label: '1ª Temporada',                          kitsuId: '6589'  },
+                { label: '2ª Temporada — Gun Gale Online',        kitsuId: '8174'  },
+                { label: '3ª Temporada — Alicization',            kitsuId: '13893' },
+                { label: '3ª Temporada — War of Underworld Pt.1', kitsuId: '42213' },
+                { label: '3ª Temporada — War of Underworld Pt.2', kitsuId: '42927' },
+            ]);
+
+            /* ── Tokyo Ghoul ───────────────────────────────────────
+               T1:8271  Root A:9135  :re Pt1:13929  :re Pt2:41359 */
+            reg(m, '8271', [
+                { label: '1ª Temporada',       kitsuId: '8271'  },
+                { label: '2ª Temporada Root A', kitsuId: '9135'  },
+                { label: '3ª Temporada :re',    kitsuId: '13929' },
+                { label: '3ª Temporada :re — Parte 2', kitsuId: '41359' },
+            ]);
+
+            /* ── Bleach ────────────────────────────────────────────
+               Clássico:244  TYBW Pt1:43078  TYBW Pt2:46903
+               TYBW Pt3:48015  TYBW Pt4:49444                    */
+            reg(m, '244', [
+                { label: 'Bleach — Série Clássica',        kitsuId: '244'   },
+                { label: 'TYBW — Pt.1: Encarnação Vermelha',kitsuId: '43078' },
+                { label: 'TYBW — Pt.2: Separação',         kitsuId: '46903' },
+                { label: 'TYBW — Pt.3: Conflito',          kitsuId: '48015' },
+                { label: 'TYBW — Pt.4: Culminação',        kitsuId: '49444' },
+            ]);
+
+            /* ── Fullmetal Alchemist: Brotherhood ── série única ─── */
+            reg(m, '3936', [
+                { label: 'Série Completa', kitsuId: '3936' },
+            ]);
+
+            /* ── Naruto ─────────────────────────────────────────── */
+            reg(m, '11', [
+                { label: 'Naruto Clássico',  kitsuId: '11'   },
+                { label: 'Naruto Shippuden', kitsuId: '1555' },
+            ]);
+
+            /* ── Dragon Ball Z ──────────────────────────────────── */
+            reg(m, '720', [
+                { label: 'Dragon Ball Z',    kitsuId: '720'   },
+                { label: 'Dragon Ball Super',kitsuId: '10879' },
+            ]);
+
+            /* ── Death Note ─────────────── série única ─────────── */
+            reg(m, '1376', [
+                { label: 'Série Completa', kitsuId: '1376' },
+            ]);
+
+            /* ── Hunter x Hunter 2011 ─── série única ────────────── */
+            reg(m, '6448', [
+                { label: 'Série Completa', kitsuId: '6448' },
+            ]);
+
+            return m;
+        })();
 
         /**
          * Retorna o entry do ANIME_SEASONS_MAP para um animeId,
@@ -1715,6 +1722,178 @@
             '41587-23': 'Jogos de Guerra: Rodada Final',
             '41587-24': 'Um Pedaço de Esperança',
             '41587-25': 'Encontro com Destino',
+
+            /* ── Death Note (37 eps) ── */
+            '1376-1':  'Renascimento',
+            '1376-2':  'Confronto',
+            '1376-3':  'Negociação',
+            '1376-4':  'Perseguição',
+            '1376-5':  'Táticas',
+            '1376-6':  'Manipulação',
+            '1376-7':  'Nublado',
+            '1376-8':  'Olhar Fulminante',
+            '1376-9':  'Contato',
+            '1376-10': 'Agressão',
+            '1376-11': 'Colisão',
+            '1376-12': 'Amor',
+            '1376-13': 'Confissão',
+            '1376-14': 'Tentação',
+            '1376-15': 'Armadilha em Espiral',
+            '1376-16': 'Decisão',
+            '1376-17': 'Execução',
+            '1376-18': 'Aliança',
+            '1376-19': 'Matsuda',
+            '1376-20': 'Sucessor',
+            '1376-21': 'Atividade',
+            '1376-22': 'Guia',
+            '1376-23': 'Frenesi',
+            '1376-24': 'Renascido',
+            '1376-25': 'Silêncio',
+            '1376-26': 'Renovação',
+            '1376-27': 'Sequestro',
+            '1376-28': 'Imitação',
+            '1376-29': 'Pai',
+            '1376-30': 'Justiça',
+            '1376-31': 'Transferência',
+            '1376-32': 'Seleção',
+            '1376-33': 'Desprezo',
+            '1376-34': 'Vigilância',
+            '1376-35': 'Mello',
+            '1376-36': '1,28',
+            '1376-37': 'Novo Mundo',
+
+            /* ── Jujutsu Kaisen – T1 (24 eps) ── */
+            '42765-1':  'Ryomen Sukuna',
+            '42765-2':  'Por Mim Mesmo',
+            '42765-3':  'Garota de Aço',
+            '42765-4':  'O Embrião Amaldiçoado Deve Morrer',
+            '42765-5':  'O Embrião Amaldiçoado Deve Morrer — Parte 2',
+            '42765-6':  'Depois da Chuva',
+            '42765-7':  'Ataque',
+            '42765-8':  'Tédio',
+            '42765-9':  'Peixinhos e Retribuição Inversa',
+            '42765-10': 'Transfiguração Ociosa',
+            '42765-11': 'Mente Fechada',
+            '42765-12': 'Para Você, Um Dia',
+            '42765-13': 'Amanhã',
+            '42765-14': 'Intercâmbio de Kyoto — Batalha em Grupo: 0',
+            '42765-15': 'Intercâmbio de Kyoto — Batalha em Grupo: 1',
+            '42765-16': 'Intercâmbio de Kyoto — Batalha em Grupo: 2',
+            '42765-17': 'Intercâmbio de Kyoto — Batalha em Grupo: 3',
+            '42765-18': 'Sábio',
+            '42765-19': 'Flash Negro',
+            '42765-20': 'Fora do Padrão',
+            '42765-21': 'Jujutsu Koshien',
+            '42765-22': 'A Origem da Obediência Cega',
+            '42765-23': 'A Origem da Obediência Cega — Parte 2',
+            '42765-24': 'Cúmplices',
+
+            /* ── Jujutsu Kaisen – T2 (23 eps) ── */
+            '45857-1':  'Tesouro Escondido',
+            '45857-2':  'Tesouro Escondido — Parte 2',
+            '45857-3':  'Tesouro Escondido — Parte 3',
+            '45857-4':  'Tesouro Escondido — Parte 4',
+            '45857-5':  'Morte Prematura',
+            '45857-6':  'É Assim',
+            '45857-7':  'Festival Noturno',
+            '45857-8':  'O Incidente de Shibuya',
+            '45857-9':  'Incidente de Shibuya — Portão, Aberto',
+            '45857-10': 'Pandemônio',
+            '45857-11': 'Invocação',
+            '45857-12': 'Faca Cega',
+            '45857-13': 'Escama Vermelha',
+            '45857-14': 'Oscilações',
+            '45857-15': 'Oscilações — Parte 2',
+            '45857-16': 'Trovão',
+            '45857-17': 'Trovão — Parte 2',
+            '45857-18': 'Certo e Errado',
+            '45857-19': 'Certo e Errado — Parte 2',
+            '45857-20': 'Certo e Errado — Parte 3',
+            '45857-21': 'Metamorfose',
+            '45857-22': 'Metamorfose — Parte 2',
+            '45857-23': 'Incidente de Shibuya — Portão, Fechado',
+
+            /* ── Demon Slayer – T1 (26 eps) ── */
+            '41370-1':  'Crueldade',
+            '41370-2':  'A Promessa de Sakonji Urokodaki',
+            '41370-3':  'Seleção Final',
+            '41370-4':  'Aqueles que Sobrevivem à Seleção Final',
+            '41370-5':  'Meu Próprio Aço',
+            '41370-6':  'O Espadachim Acompanhado por um Demônio',
+            '41370-7':  'Muzan Kibutsuji',
+            '41370-8':  'O Cheiro do Sangue Encantador',
+            '41370-9':  'Demônios do Temari e Demônios da Flecha',
+            '41370-10': 'Para Sempre Juntos',
+            '41370-11': 'Mansão do Tsuzumi',
+            '41370-12': 'O Javali Expõe suas Presas, Zenitsu Dorme',
+            '41370-13': 'Algo Mais Importante que a Vida',
+            '41370-14': 'A Casa com o Brasão da Glicínia',
+            '41370-15': 'Monte Natagumo',
+            '41370-16': 'Deixando Alguém Passar Primeiro',
+            '41370-17': 'Você Deve Dominar uma Única Coisa',
+            '41370-18': 'Um Laço Forjado',
+            '41370-19': 'Hinokami',
+            '41370-20': 'Família de Mentira',
+            '41370-21': 'Contra as Regras do Corpo',
+            '41370-22': 'Mestre da Mansão',
+            '41370-23': 'Reunião dos Hashira',
+            '41370-24': 'Treinamento de Reabilitação',
+            '41370-25': 'Tsuguko, Kanao Tsuyuri',
+            '41370-26': 'Nova Missão',
+
+            /* ── Demon Slayer – Arco do Trem Mugen (7 eps) ── */
+            '45249-1':  'Flame Hashira Kyojuro Rengoku',
+            '45249-2':  'Whoosh! Estamos no Trem Mugen',
+            '45249-3':  'Akaza',
+            '45249-4':  'Insulto',
+            '45249-5':  'Avante!',
+            '45249-6':  'Coloque Fogo em Seu Coração',
+            '45249-7':  'A Batalha do Trem Mugen',
+
+            /* ── Demon Slayer – Arco do Distrito do Entretenimento (11 eps) ── */
+            '44081-1':  'Som Hashira Tengen Uzui',
+            '44081-2':  'Infiltração no Distrito do Entretenimento',
+            '44081-3':  'O que Você É?',
+            '44081-4':  'Esta Noite',
+            '44081-5':  'As Coisas Vão Ficar Agitadas!!',
+            '44081-6':  'Memórias em Camadas',
+            '44081-7':  'Transformação',
+            '44081-8':  'Reunião',
+            '44081-9':  'Derrotando um Demônio da Lua Superior',
+            '44081-10': 'Nunca Desista',
+            '44081-11': 'Não Importa Quantas Vidas',
+
+            /* ── Hunter x Hunter 2011 — primeiros 30 eps ── */
+            '6448-1':  'Partida × e × Amigos',
+            '6448-2':  'Teste × de × Coragem',
+            '6448-3':  'Rivais × pela × Sobrevivência',
+            '6448-4':  'Derrota × e × Vergonha',
+            '6448-5':  'Retorno × e × Retirada',
+            '6448-6':  'Um × Final × Surpreendente',
+            '6448-7':  'Confronto × no × Dirigível',
+            '6448-8':  'Mentirosos × e × Enganadores',
+            '6448-9':  'Escudo × e × Espada',
+            '6448-10': 'Truque × do × Truque',
+            '6448-11': 'Problemas × no × Pântano',
+            '6448-12': 'Último Teste × da × Resolução',
+            '6448-13': 'Carta × de × Gon',
+            '6448-14': 'Acerto × e × Recuo',
+            '6448-15': 'A × Passagem × Verdadeira',
+            '6448-16': 'Chegada × na × Arena',
+            '6448-17': 'Objetivo × Alcançado',
+            '6448-18': 'Infiltração × na × Família Zoldyck',
+            '6448-19': 'Não Dá × para × Vencer a Ganância',
+            '6448-20': 'Gon × e × Killua',
+            '6448-21': 'Gon × e × Killua — Parte 2',
+            '6448-22': 'Realidade? × Ou × Armadilha?',
+            '6448-23': 'Abertura × G × I',
+            '6448-24': 'Seis Faces × Sete Faces',
+            '6448-25': 'Um × × Hunter Endividado',
+            '6448-26': 'O × Terror × de Kastro',
+            '6448-27': 'Preso × entre × a Indecisão',
+            '6448-28': 'Hisoka × se × Move',
+            '6448-29': 'Voltando × para × Dentro',
+            '6448-30': 'Uma × Luta × Brutal',
         };
 
         /**
