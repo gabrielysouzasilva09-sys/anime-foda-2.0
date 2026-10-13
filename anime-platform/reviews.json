@@ -1,0 +1,45 @@
+[ {
+  "id" : "7adacd63-3a56-4bb6-b0f8-f6b7504cdc9d",
+  "animeId" : "7442",
+  "animeTitle" : "Attack on Titan",
+  "animeImage" : "https://media.kitsu.app/anime/poster_images/7442/small.jpg",
+  "userName" : "wfqg",
+  "rating" : 4,
+  "comment" : "d\\eg",
+  "containsSpoiler" : false,
+  "createdAt" : "2026-10-09T11:10:32",
+  "likes" : 0
+}, {
+  "id" : "a0a206ea-7133-4f9d-9f0a-bba9ec6b1909",
+  "animeId" : "3936",
+  "animeTitle" : "Fullmetal Alchemist: Brotherhood",
+  "animeImage" : "https://media.kitsu.app/anime/poster_images/3936/small.jpg",
+  "userName" : "evandro",
+  "rating" : 10,
+  "comment" : "muito foda",
+  "containsSpoiler" : false,
+  "createdAt" : "2026-10-09T11:15:19",
+  "likes" : 1
+}, {
+  "id" : "aec94999-6fcb-4872-8145-4b4bb6bf873f",
+  "animeId" : "11209",
+  "animeTitle" : "Re:Zero kara Hajimeru Isekai Seikatsu",
+  "animeImage" : "https://media.kitsu.app/anime/poster_images/11209/small.jpg",
+  "userName" : "bhhjbuj",
+  "rating" : 7,
+  "comment" : "bjkbuobhip",
+  "containsSpoiler" : true,
+  "createdAt" : "2026-10-09T11:16:36",
+  "likes" : 0
+}, {
+  "id" : "11e97cd4-b906-41a1-bcdb-04cfa755fc4b",
+  "animeId" : "11469",
+  "animeTitle" : "Boku no Hero Academia",
+  "animeImage" : "https://media.kitsu.app/anime/poster_images/11469/small.jpg",
+  "userName" : "Anônimo",
+  "rating" : 5,
+  "comment" : "grfdf",
+  "containsSpoiler" : false,
+  "createdAt" : "2026-10-09T11:39:29",
+  "likes" : 0
+} ]

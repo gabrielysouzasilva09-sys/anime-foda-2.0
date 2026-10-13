@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniReview - Plataforma de Animes</title>
+    <style>
+        /* ===== Reset & Variáveis ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary:    #0d0d0f;
+            --bg-secondary:  #16161a;
+            --bg-card:       #1f1f26;
+            --bg-card-hover: #252530;
+            --accent:        #7c3aed;
+            --accent-hover:  #8b5cf6;
+            --accent-glow:   rgba(124, 58, 237, 0.35);
+            --text-primary:  #f4f4f5;
+            --text-secondary:#a1a1aa;
+            --text-muted:    #71717a;
+            --border:        #27272a;
+            --star:          #3f3f46;
+            --star-filled:   #fbbf24;
+            --success:       #22c55e;
+            --warning:       #eab308;
+            --danger:        #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== Toast de Sucesso ===== */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success);
+            color: #fff;
+            padding: 0.85rem 1.4rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transform: translateY(120%);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .toast.show { transform: translateY(0); }
+
+        /* ===== Header ===== */
+        header {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 480px;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .search-btn:hover { background: var(--accent-hover); }
+
+        /* ===== Main ===== */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section { margin-bottom: 3rem; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--accent) 0%, #a855f7 100%);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Anime Grid ===== */
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .anime-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+        .anime-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--accent-glow);
+        }
+
+        .anime-card-image-container { overflow: hidden; position: relative; }
+
+        .anime-card-image {
+            width: 100%;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            transition: transform 0.3s;
+            display: block;
+        }
+        .anime-card:hover .anime-card-image { transform: scale(1.05); }
+
+        .anime-card-score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.85);
+            padding: 0.3rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .anime-card-info { padding: 1rem; }
+
+        .anime-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.4rem;
+        }
+
+        .anime-card-meta { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* ===== Review Cards ===== */
+        .reviews-feed { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        .review-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .review-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* Linha superior: capa + info + nota */
+        .review-top {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-anime-thumb {
+            width: 56px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .review-info { flex: 1; min-width: 0; }
+
+        .review-anime-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.2rem;
+        }
+
+        /* Avatar + autor */
+        .review-author-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .review-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .review-author-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .review-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        /* Estrelas da nota */
+        .review-stars {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-top: 0.1rem;
+        }
+        .review-stars .s { font-size: 1rem; color: var(--star); }
+        .review-stars .s.on { color: var(--star-filled); }
+
+        .review-score-badge {
+            margin-left: 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--star-filled);
+            background: rgba(251, 191, 36, 0.12);
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        /* Corpo da resenha / spoiler */
+        .review-body { margin-bottom: 1rem; }
+
+        .spoiler-box {
+            background: rgba(234,179,8,0.07);
+            border: 1px solid rgba(234,179,8,0.25);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .spoiler-box:hover { background: rgba(234,179,8,0.12); }
+
+        .spoiler-warning {
+            color: var(--warning);
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .spoiler-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            transition: filter 0.3s;
+        }
+        .spoiler-box.blurred .spoiler-text {
+            filter: blur(7px);
+            pointer-events: none;
+        }
+
+        .review-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        /* Ações */
+        .review-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-like {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-like:hover, .btn-like.liked {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* ===== Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            backdrop-filter: blur(8px);
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            animation: slideUp 0.28s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-image {
+            width: 150px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .modal-info { flex: 1; min-width: 0; }
+
+        .modal-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            line-height: 1.3;
+        }
+
+        .modal-meta {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.9rem;
+        }
+        .modal-meta span { margin-right: 0.9rem; }
+
+        .modal-synopsis {
+            font-size: 0.88rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .modal-body { padding: 1.5rem; }
+
+        .form-group { margin-bottom: 1.4rem; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.55rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .form-textarea { resize: vertical; min-height: 110px; }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-muted); }
+
+        /* Estrelas interativas do modal */
+        .rating-input {
+            display: flex;
+            gap: 4px;
+        }
+        .rating-input label {
+            font-size: 2.1rem;
+            cursor: pointer;
+            color: var(--star);
+            transition: color 0.12s, transform 0.12s;
+            line-height: 1;
+            user-select: none;
+        }
+        .rating-input label:hover,
+        .rating-input label.lit {
+            color: var(--star-filled);
+            transform: scale(1.18);
+        }
+        .rating-hint {
+            margin-top: 0.4rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            min-height: 1.2em;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 1.2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            background: var(--bg-card);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: var(--bg-card-hover); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== Estados ===== */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        .loading-spinner {
+            width: 38px;
+            height: 38px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+        .empty-icon { font-size: 2.8rem; margin-bottom: 0.75rem; }
+
+        /* ===== Temporadas e Episódios ===== */
+
+        /* Tabs de navegação entre "Resenha" e "Episódios" */
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.5rem;
+            gap: 0;
+        }
+        .modal-tab {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+        .modal-tab:hover { color: var(--text-primary); }
+        .modal-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* Painel de episódios */
+        .episodes-panel { padding: 1.5rem; }
+
+        /* Seletor de temporada (dropdown) */
+        .seasons-bar {
+            margin-bottom: 1.25rem;
+        }
+        .season-select {
+            width: 100%;
+            padding: 0.65rem 2.5rem 0.65rem 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.9rem center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .season-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .season-select:hover {
+            border-color: var(--accent);
+        }
+        .season-select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 0.5rem;
+        }
+
+        /* Lista de episódios */
+        .episodes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .episode-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.9rem;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .episode-row:hover { border-color: var(--accent); }
+
+        .episode-num {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--accent);
+            min-width: 2rem;
+            text-align: center;
+            background: rgba(124,58,237,0.12);
+            border-radius: 6px;
+            padding: 0.2rem 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .episode-title {
+            flex: 1;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .episode-avg {
+            font-size: 0.78rem;
+            color: var(--star-filled);
+            font-weight: 600;
+            min-width: 3.5rem;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* Select de nota */
+        .episode-nota-select {
+            padding: 0.3rem 0.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.82rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            min-width: 70px;
+            transition: border-color 0.2s;
+        }
+        .episode-nota-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .episode-nota-select.rated {
+            border-color: var(--star-filled);
+            color: var(--star-filled);
+        }
+
+        /* Botão guardar nota */
+        .episode-save-btn {
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.18s, transform 0.1s;
+        }
+        .episode-save-btn:hover { background: var(--accent-hover); transform: scale(1.04); }
+        .episode-save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .episode-save-btn.saved {
+            background: var(--success);
+        }
+
+        /* Loading / vazio dentro do painel */
+        .episodes-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+        .episodes-loading .loading-spinner {
+            margin: 0 auto 0.75rem;
+        }
+
+        /* ===== Responsivo ===== */
+        @media (max-width: 768px) {
+            header { padding: 1rem; }
+            .header-content { flex-direction: column; gap: 1rem; }
+            .search-container { max-width: 100%; width: 100%; }
+            main { padding: 1.25rem 1rem; }
+            .anime-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+            .modal-header { flex-direction: column; align-items: center; text-align: center; }
+            .modal-image { width: 130px; }
+            .modal-title { font-size: 1.2rem; }
+            .modal-footer { flex-direction: column; }
+            .modal-footer .btn { width: 100%; justify-content: center; }
+            .review-top { flex-wrap: wrap; }
+            .episode-row { flex-wrap: wrap; gap: 0.5rem; }
+            .episode-title { min-width: 100%; order: -1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast de sucesso -->
+    <div class="toast" id="toast">✅ Resenha enviada com sucesso!</div>
+
+    <!-- ===== Header ===== -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">AniReview</a>
+            <div class="search-container">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar animes...">
+                <button class="search-btn" onclick="searchAnimes()">Buscar</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== Conteúdo ===== -->
+    <main>
+        <!-- Catálogo -->
+        <section class="catalog-section">
+            <div class="section-header">
+                <h2>Catálogo</h2>
+            </div>
+            <div class="anime-grid" id="animeGrid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>Carregando animes...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resenhas -->
+        <section class="reviews-section">
+            <div class="section-header">
+                <h2>Resenhas da Comunidade</h2>
+            </div>
+            <div class="reviews-feed" id="reviewsFeed">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>Carregando resenhas...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== Modal ===== -->
+    <div class="modal-overlay" id="animeModal" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal-header">
+                <img class="modal-image" id="modalImage" src="" alt="">
+                <div class="modal-info">
+                    <h3 class="modal-title" id="modalTitle"></h3>
+                    <div class="modal-meta" id="modalMeta"></div>
+                    <p class="modal-synopsis" id="modalSynopsis"></p>
+                </div>
+            </div>
+
+            <!-- Tabs: Resenha | Episódios -->
+            <div class="modal-tabs">
+                <button class="modal-tab active" id="tabReview"   onclick="switchTab('review')">✍️ Resenha</button>
+                <button class="modal-tab"         id="tabEpisodes" onclick="switchTab('episodes')">🎬 Episódios</button>
+            </div>
+
+            <!-- ── Painel Resenha ── -->
+            <div id="panelReview">
+                <div class="modal-body">
+                    <!-- Nota por estrelas -->
+                    <div class="form-group">
+                        <label class="form-label">Sua Nota</label>
+                        <div class="rating-input" id="ratingInput" role="group" aria-label="Selecione uma nota de 1 a 10">
+                            <!-- gerado via JS -->
+                        </div>
+                        <div class="rating-hint" id="ratingHint">Clique em uma estrela para dar a nota</div>
+                    </div>
+
+                    <!-- Nome -->
+                    <div class="form-group">
+                        <label class="form-label" for="usernameInput">Seu Nome</label>
+                        <input type="text" class="form-input" id="usernameInput" placeholder="Seu nome (opcional)" maxlength="60">
+                    </div>
+
+                    <!-- Resenha -->
+                    <div class="form-group">
+                        <label class="form-label" for="reviewInput">Sua Resenha</label>
+                        <textarea class="form-textarea" id="reviewInput" placeholder="O que você achou deste anime?" maxlength="2000"></textarea>
+                    </div>
+
+                    <!-- Spoiler -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="spoilerCheck">
+                            <span>⚠️ Esta resenha contém spoilers</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitReview()">Enviar Resenha</button>
+                </div>
+            </div>
+
+            <!-- ── Painel Episódios ── -->
+            <div id="panelEpisodes" style="display:none;">
+                <div class="episodes-panel">
+                    <!-- Nome do utilizador para as notas de episódios -->
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label class="form-label" for="epUsernameInput" style="font-size:0.85rem;color:var(--text-secondary);">
+                            Seu Nome (para guardar notas)
+                        </label>
+                        <input type="text" class="form-input" id="epUsernameInput"
+                               placeholder="Seu nome (opcional)" maxlength="60"
+                               style="padding:0.55rem 0.9rem;font-size:0.88rem;">
+                    </div>
+
+                    <!-- Seletor de temporada -->
+                    <div class="seasons-bar" id="seasonsBar">
+                        <!-- gerado via JS -->
+                    </div>
+
+                    <!-- Lista de episódios -->
+                    <div id="episodesList">
+                        <div class="episodes-loading">
+                            <div class="loading-spinner"></div>
+                            <div>Carregando temporadas...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        /* ── Globais ── */
+        let currentAnime   = null;
+        let currentRating  = 0;
+        let currentSeasons = [];       // lista de TemporadaDTO
+        let currentSeasonId = null;    // ID da temporada activa na tab episódios
+
+        const API_BASE     = 'http://localhost:8080';   // endereço do servidor Spring Boot
+        const KITSU_BASE   = 'https://kitsu.io/api/edge';
+        const KITSU_HEADERS = { 'Accept': 'application/vnd.api+json' };
+
+        const RATING_LABELS = ['', 'Horrível', 'Muito ruim', 'Ruim', 'Fraco', 'Regular',
+                                    'Ok', 'Bom', 'Muito bom', 'Ótimo', 'Obra-prima! ★'];
+
+        /* ── Init ── */
+        document.addEventListener('DOMContentLoaded', () => {
+            buildStarInput();
+            loadPopularAnimes();
+            loadReviews();
+            document.getElementById('searchInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') searchAnimes();
+            });
+        });
+
+        /* ════════════════════════════════
+           ESTRELAS INTERATIVAS DO MODAL
+        ════════════════════════════════ */
+        function buildStarInput() {
+            const container = document.getElementById('ratingInput');
+            container.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const lbl = document.createElement('label');
+                lbl.textContent = '★';
+                lbl.title = `${i} — ${RATING_LABELS[i]}`;
+                lbl.addEventListener('click', () => setRating(i));
+                lbl.addEventListener('mouseenter', () => highlightStars(i));
+                lbl.addEventListener('mouseleave', () => highlightStars(currentRating));
+                container.appendChild(lbl);
+            }
+        }
+
+        function highlightStars(upTo) {
+            document.querySelectorAll('#ratingInput label').forEach((lbl, idx) => {
+                lbl.classList.toggle('lit', idx < upTo);
+            });
+            document.getElementById('ratingHint').textContent =
+                upTo > 0 ? `${upTo}/10 — ${RATING_LABELS[upTo]}` : 'Clique em uma estrela para dar a nota';
+        }
+
+        function setRating(n) {
+            currentRating = n;
+            highlightStars(n);
+        }
+
+        /* ════════════════════════════════
+           KITSU API
+        ════════════════════════════════ */
+        function kitsuScore(raw) {
+            if (!raw) return null;
+            return (parseFloat(raw) / 10).toFixed(1);
+        }
+
+        async function loadPopularAnimes() {
+            setGridLoading();
+            try {
+                const res  = await fetch(`${KITSU_BASE}/anime?page[limit]=20&sort=-userCount`, { headers: KITSU_HEADERS });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                displayAnimes(data.data);
+            } catch (err) {
+                console.error('Erro ao carregar catálogo:', err);
+                setGridError('Não foi possível carregar o catálogo. Verifique sua conexão.');
+            }
+        }
+
+        async function searchAnimes() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) { loadPopularAnimes(); return; }
+
+            setGridLoading('Buscando...');
+            try {
+                const res  = await fetch(
+                    `${KITSU_BASE}/anime?filter[text]=${encodeURIComponent(q)}&page[limit]=20`,
+                    { headers: KITSU_HEADERS }
+                );
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                displayAnimes(data.data);
+            } catch (err) {
+                console.error('Erro na busca:', err);
+                setGridError('Erro na busca. Tente novamente.');
+            }
+        }
+
+        function displayAnimes(list) {
+            const grid = document.getElementById('animeGrid');
+            if (!list || list.length === 0) {
+                grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div>Nenhum anime encontrado</div></div>`;
+                return;
+            }
+            grid.innerHTML = list.map(item => {
+                const a     = item.attributes;
+                const title = escapeHtml(a.canonicalTitle || 'Sem título');
+                const cover = a.posterImage?.small || 'https://placehold.co/200x300/1f1f26/71717a?text=Sem+Capa';
+                const score = kitsuScore(a.averageRating);
+                const year  = a.startDate ? a.startDate.slice(0, 4) : '?';
+                return `
+                <div class="anime-card" onclick="openModal('${item.id}')" tabindex="0"
+                     onkeypress="if(event.key==='Enter') openModal('${item.id}')">
+                    <div class="anime-card-image-container">
+                        <img class="anime-card-image" src="${cover}" alt="${title}" loading="lazy">
+                        ${score ? `<div class="anime-card-score">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="#fbbf24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>${score}</div>` : ''}
+                    </div>
+                    <div class="anime-card-info">
+                        <div class="anime-card-title">${title}</div>
+                        <div class="anime-card-meta">${a.subtype || '?'} • ${year}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function setGridLoading(msg = 'Carregando animes...') {
+            document.getElementById('animeGrid').innerHTML =
+                `<div class="loading"><div class="loading-spinner"></div><div>${msg}</div></div>`;
+        }
+
+        function setGridError(msg) {
+            document.getElementById('animeGrid').innerHTML =
+                `<div class="empty-state"><div class="empty-icon">⚠️</div><div>${msg}</div></div>`;
+        }
+
+        /* ════════════════════════════════
+           MODAL
+        ════════════════════════════════ */
+        async function openModal(animeId) {
+            try {
+                const res  = await fetch(`${KITSU_BASE}/anime/${animeId}`, { headers: KITSU_HEADERS });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const json = await res.json();
+                const a    = json.data.attributes;
+
+                currentAnime = {
+                    id:       json.data.id,
+                    title:    a.canonicalTitle || 'Sem título',
+                    image:    a.posterImage?.small || '',
+                    synopsis: a.synopsis         || 'Sem sinopse disponível.',
+                    score:    kitsuScore(a.averageRating),
+                    type:     a.subtype,
+                    episodes: a.episodeCount,
+                    year:     a.startDate ? a.startDate.slice(0, 4) : null
+                };
+
+                document.getElementById('modalImage').src = currentAnime.image;
+                document.getElementById('modalImage').alt = currentAnime.title;
+                document.getElementById('modalTitle').textContent = currentAnime.title;
+                document.getElementById('modalSynopsis').textContent = currentAnime.synopsis;
+
+                const meta = [
+                    currentAnime.type     && `<span>${currentAnime.type}</span>`,
+                    currentAnime.episodes && `<span>${currentAnime.episodes} eps</span>`,
+                    currentAnime.year     && `<span>${currentAnime.year}</span>`,
+                    currentAnime.score    && `<span>★ ${currentAnime.score}</span>`,
+                ].filter(Boolean).join('');
+                document.getElementById('modalMeta').innerHTML = meta;
+
+                resetForm();
+                document.getElementById('animeModal').classList.add('active');
+                document.getElementById('usernameInput').focus();
+            } catch (err) {
+                console.error('Erro ao abrir modal:', err);
+                alert('Não foi possível carregar os detalhes deste anime.');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('animeModal').classList.remove('active');
+        }
+
+        function resetForm() {
+            currentRating = 0;
+            currentSeasons = [];
+            currentSeasonId = null;
+            highlightStars(0);
+            document.getElementById('usernameInput').value  = '';
+            document.getElementById('reviewInput').value    = '';
+            document.getElementById('spoilerCheck').checked = false;
+            document.getElementById('submitBtn').disabled   = false;
+            document.getElementById('submitBtn').textContent = 'Enviar Resenha';
+            // Volta para a tab Resenha
+            switchTab('review');
+            // Limpa o painel de episódios
+            document.getElementById('seasonsBar').innerHTML  = '';
+            document.getElementById('episodesList').innerHTML =
+                '<div class="episodes-loading"><div class="loading-spinner"></div><div>Carregando temporadas...</div></div>';
+        }
+
+        /* ════════════════════════════════
+           TABS DO MODAL
+        ════════════════════════════════ */
+        function switchTab(tab) {
+            const isEp = tab === 'episodes';
+            document.getElementById('panelReview').style.display   = isEp ? 'none' : '';
+            document.getElementById('panelEpisodes').style.display = isEp ? '' : 'none';
+            document.getElementById('tabReview').classList.toggle('active',   !isEp);
+            document.getElementById('tabEpisodes').classList.toggle('active',  isEp);
+
+            if (isEp && currentAnime && currentSeasons.length === 0) {
+                loadSeasons(currentAnime.id);
+            }
+        }
+
+        /* ════════════════════════════════
+           MAPAS DE TRADUÇÃO PT-BR (Crunchyroll)
+        ════════════════════════════════ */
+
+        /** Nomes das temporadas por ID → PT-BR */
+        const SEASON_NAMES_PT = {
+            // Attack on Titan (Shingeki no Kyojin) — IDs Kitsu: 7442
+            '7442-s1': '1ª Temporada',
+            '7442-s2': '2ª Temporada',
+            '7442-s3': '3ª Temporada',
+            '7442-s4': '4ª Temporada — A Temporada Final',
+            // One Punch Man — IDs Kitsu: 10740
+            '10740-s1': '1ª Temporada',
+            '10740-s2': '2ª Temporada',
+        };
+
+        /** Títulos dos episódios por ID → PT-BR (padrão Crunchyroll) */
+        const EPISODE_TITLES_PT = {
+            /* ── Attack on Titan – T1 (25 eps) ── */
+            '7442-1':  'Para Você, 2000 Anos no Futuro',
+            '7442-2':  'Aquele Dia',
+            '7442-3':  'Brilhando Fracamente no Meio do Desespero',
+            '7442-4':  'A Noite da Dissolução',
+            '7442-5':  'Primeira Batalha',
+            '7442-6':  'O Mundo Que Ela Viu',
+            '7442-7':  'A Pequena Lâmina',
+            '7442-8':  'Ouvindo os Batimentos',
+            '7442-9':  'O Rastro do Braço Esquerdo',
+            '7442-10': 'Resposta',
+            '7442-11': 'Ídolo',
+            '7442-12': 'Ferida',
+            '7442-13': 'Desejo Primordial',
+            '7442-14': 'Não Consigo Olhar Para os Olhos Dele',
+            '7442-15': 'Esquadrão de Operações Especiais',
+            '7442-16': 'O Que Fazer Agora',
+            '7442-17': 'A Titã Fêmea',
+            '7442-18': 'A Floresta das Árvores Gigantes',
+            '7442-19': 'Morder',
+            '7442-20': 'Erwin Smith',
+            '7442-21': 'Golpe Esmagador',
+            '7442-22': 'Os Derrotados',
+            '7442-23': 'Sorriso',
+            '7442-24': 'Misericórdia',
+            '7442-25': 'Muralha',
+            /* ── Attack on Titan – T2 (12 eps, ep 26-37) ── */
+            '7442-26': 'Besta',
+            '7442-27': 'Pequeno Guerreiro',
+            '7442-28': 'Eu Me Importo',
+            '7442-29': 'Soldado',
+            '7442-30': 'Guerreiro',
+            '7442-31': 'Necessidade',
+            '7442-32': 'Próximo de Você',
+            '7442-33': 'Olhos de Uma Criança Morta há Muito',
+            '7442-34': 'Orquestra de Gritos',
+            '7442-35': 'Há Algo Mais Importante do Que a Sua Vida?',
+            '7442-36': 'Eu Sempre Vou Ser do Teu Lado',
+            '7442-37': 'Ucrônia',
+            /* ── Attack on Titan – T3 (22 eps, ep 38-59) ── */
+            '7442-38': 'Com Dois Dedos',
+            '7442-39': 'O Que Deveria Ser Feito',
+            '7442-40': 'O Covil dos Inimigos',
+            '7442-41': 'Reply',
+            '7442-42': 'Declaração de Guerra',
+            '7442-43': 'Agindo no Coração',
+            '7442-44': 'Acordo',
+            '7442-45': 'Escolha com Liberdade',
+            '7442-46': 'Sem Arrependimentos',
+            '7442-47': 'Rayagente das Trevas',
+            '7442-48': 'Rumo à Árvore do Pátio',
+            '7442-49': 'Faça o Seu Melhor',
+            '7442-50': 'Artimanhas Para a Terra',
+            '7442-51': 'Guerreiro Retornado',
+            '7442-52': 'Ladrão',
+            '7442-53': 'Ele e a Voz do Truão',
+            '7442-54': 'À Beira do Mar',
+            '7442-55': 'O Que Está no Porão',
+            '7442-56': 'Que Tipo de Verdade É Esta?',
+            '7442-57': 'Agradecimento',
+            '7442-58': 'O Mar Para Além das Muralhas',
+            '7442-59': 'O Oceano',
+            /* ── Attack on Titan – T4 Final (28 eps, ep 60-87) ── */
+            '7442-60': 'O Outro Lado do Mar',
+            '7442-61': 'Falácia',
+            '7442-62': 'A Zona de Repressão',
+            '7442-63': 'Uma Declaração de Guerra',
+            '7442-64': 'A Marcha Adiante do Martelo de Guerra',
+            '7442-65': 'A Ilusão de um Momento de Paz',
+            '7442-66': 'Encontro com o Demônio',
+            '7442-67': 'Mentira e Verdade',
+            '7442-68': 'Os Descendentes',
+            '7442-69': 'Confissão',
+            '7442-70': 'Desvio',
+            '7442-71': 'O Estudante Brilhante',
+            '7442-72': 'Rumo à Árvore do Ikaruga',
+            '7442-73': 'O Trovão',
+            '7442-74': 'Traição',
+            '7442-75': 'Olhos Puros',
+            '7442-76': 'A Última Fronteira',
+            '7442-77': 'O Teste da Terra',
+            '7442-78': 'Uma Longa Jornada de Sonho',
+            '7442-79': 'De Volta ao Luar',
+            '7442-80': 'Um Sonho da Beira da Batalha',
+            '7442-81': 'Somos Livres',
+            '7442-82': 'O Ruído dos Pés',
+            '7442-83': 'Lágrimas de Mágoa',
+            '7442-84': 'Usei Minha Coragem Num Passe de Mágica',
+            '7442-85': 'A Última Missão Isolada',
+            '7442-86': 'O Momento em Que o Coração Começa a Bater',
+            '7442-87': 'Uma Retrospectiva Além das Muralhas',
+            /* ── One Punch Man – T1 (12 eps) ── */
+            '10740-1':  'O Homem Mais Forte',
+            '10740-2':  'O Ciborgue Solitário',
+            '10740-3':  'O Cientista Obcecado',
+            '10740-4':  'O Ninja Moderno',
+            '10740-5':  'O Mentor Supremo',
+            '10740-6':  'A Cidade Aterrorizante',
+            '10740-7':  'O Discípulo Supremo',
+            '10740-8':  'O Rei dos Mares Profundos',
+            '10740-9':  'Justiça Inabalável',
+            '10740-10': 'Perigo Incomparável',
+            '10740-11': 'O Dominador do Universo',
+            '10740-12': 'O Herói Mais Forte',
+            /* ── One Punch Man – T2 (12 eps, ep 13-24) ── */
+            '10740-13': 'Monstros de Nível de Dragão',
+            '10740-14': 'O Ninja Que É Demasiado Sério',
+            '10740-15': 'Aquilo Que o Herói Mais Forte Não Pode Fazer',
+            '10740-16': 'A Verdade por Trás da Força',
+            '10740-17': 'Cuspindo Contra o Vento',
+            '10740-18': 'O Herói e o Monstro',
+            '10740-19': 'Meu Verdadeiro Eu',
+            '10740-20': 'O Monstro em Mim',
+            '10740-21': 'O Herói Absoluto',
+            '10740-22': 'O Homem Que Teve a Mão de Deus',
+            '10740-23': 'Encontrando o Herói Que Sonhava Ser',
+            '10740-24': 'Psicose',
+        };
+
+        /**
+         * Retorna o título traduzido de um episódio.
+         * Se não houver tradução, retorna o título original.
+         */
+        function getEpisodeTitle(ep) {
+            return EPISODE_TITLES_PT[ep.id] || ep.titulo || 'Sem título';
+        }
+
+        /**
+         * Retorna o nome traduzido de uma temporada.
+         * Se não houver tradução no mapa, tenta formatar "Temporada N" → "Nª Temporada".
+         */
+        function getSeasonName(season) {
+            if (SEASON_NAMES_PT[season.id]) return SEASON_NAMES_PT[season.id];
+            // Fallback: converte "Temporada 1" → "1ª Temporada"
+            const match = (season.nome || '').match(/(\d+)/);
+            if (match) {
+                const n = parseInt(match[1], 10);
+                const suffix = n === 1 ? 'ª' : 'ª';
+                return `${n}${suffix} Temporada`;
+            }
+            return season.nome || 'Temporada';
+        }
+
+        /* ════════════════════════════════
+           TEMPORADAS E EPISÓDIOS
+        ════════════════════════════════ */
+
+        /** Carrega as temporadas do anime e constrói o select. */
+        async function loadSeasons(animeId) {
+            const bar  = document.getElementById('seasonsBar');
+            const list = document.getElementById('episodesList');
+
+            bar.innerHTML  = '';
+            list.innerHTML = '<div class="episodes-loading"><div class="loading-spinner"></div><div>Carregando temporadas...</div></div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/animes/${animeId}/seasons`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                currentSeasons = await res.json();
+
+                if (!currentSeasons || currentSeasons.length === 0) {
+                    bar.innerHTML  = '';
+                    list.innerHTML = `<div class="episodes-loading">📭 Nenhuma temporada encontrada.<br>
+                        <small style="color:var(--text-muted)">Avalie um episódio primeiro para criá-las.</small></div>`;
+                    return;
+                }
+
+                // Constrói select de temporada
+                const select = document.createElement('select');
+                select.className = 'season-select';
+                select.id = 'seasonSelect';
+                select.setAttribute('aria-label', 'Selecionar temporada');
+                select.innerHTML = currentSeasons.map(s =>
+                    `<option value="${escapeHtml(s.id)}">📺 ${escapeHtml(getSeasonName(s))}</option>`
+                ).join('');
+                select.addEventListener('change', () => selectSeason(select.value));
+                bar.appendChild(select);
+
+                // Seleciona automaticamente a primeira temporada
+                selectSeason(currentSeasons[0].id);
+
+            } catch (err) {
+                console.error('Erro ao carregar temporadas:', err);
+                list.innerHTML = `<div class="episodes-loading">⚠️ Erro ao carregar temporadas.<br>
+                    <small style="color:var(--text-muted)">${escapeHtml(err.message)}</small></div>`;
+            }
+        }
+
+        /** Seleciona uma temporada e carrega os seus episódios. */
+        async function selectSeason(seasonId) {
+            // Sincroniza o select visualmente
+            const select = document.getElementById('seasonSelect');
+            if (select) select.value = seasonId;
+            currentSeasonId = seasonId;
+            loadEpisodes(seasonId);
+        }
+
+        /** Carrega a lista de episódios de uma temporada. */
+        async function loadEpisodes(seasonId) {
+            const list     = document.getElementById('episodesList');
+            const userName = document.getElementById('epUsernameInput').value.trim();
+            const url      = `${API_BASE}/api/seasons/${seasonId}/episodes` + (userName ? `?userName=${encodeURIComponent(userName)}` : '');
+
+            list.innerHTML = '<div class="episodes-loading"><div class="loading-spinner"></div><div>Carregando episódios...</div></div>';
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const episodios = await res.json();
+                renderEpisodes(episodios);
+            } catch (err) {
+                console.error('Erro ao carregar episódios:', err);
+                list.innerHTML = `<div class="episodes-loading">⚠️ Erro ao carregar episódios.<br>
+                    <small style="color:var(--text-muted)">${escapeHtml(err.message)}</small></div>`;
+            }
+        }
+
+        /** Renderiza a lista de episódios com seletor de nota e botão guardar. */
+        function renderEpisodes(episodios) {
+            const list = document.getElementById('episodesList');
+
+            if (!episodios || episodios.length === 0) {
+                list.innerHTML = `<div class="episodes-loading">📭 Nenhum episódio encontrado nesta temporada.</div>`;
+                return;
+            }
+
+            list.innerHTML = `<div class="episodes-list">${
+                episodios.map(ep => {
+                    const rated   = ep.notaUsuario != null;
+                    const avgText = ep.notaMedia > 0
+                        ? `★ ${ep.notaMedia.toFixed(1)} (${ep.totalNotas})`
+                        : '—';
+                    const selectVal = rated ? Math.round(ep.notaUsuario) : 0;
+                    // Usa título traduzido PT-BR quando disponível
+                    const titulo  = getEpisodeTitle(ep);
+
+                    const options = `<option value="0" ${!rated ? 'selected' : ''}>— Nota —</option>`
+                        + Array.from({ length: 10 }, (_, i) => i + 1)
+                              .map(n => `<option value="${n}" ${selectVal === n ? 'selected' : ''}>${n}/10</option>`)
+                              .join('');
+
+                    return `
+                    <div class="episode-row" id="eprow-${ep.id}">
+                        <span class="episode-num">Ep ${ep.numero}</span>
+                        <span class="episode-title" title="${escapeHtml(titulo)}">${escapeHtml(titulo)}</span>
+                        <span class="episode-avg" title="${ep.totalNotas} avaliação(ões)">${escapeHtml(avgText)}</span>
+                        <select class="episode-nota-select ${rated ? 'rated' : ''}"
+                                id="sel-${ep.id}"
+                                aria-label="Nota para episódio ${ep.numero}"
+                                onchange="this.classList.toggle('rated', this.value !== '0')">
+                            ${options}
+                        </select>
+                        <button class="episode-save-btn"
+                                id="savebtn-${ep.id}"
+                                onclick="saveEpisodeNota('${ep.id}', '${ep.animeId}')"
+                                aria-label="Guardar nota do episódio ${ep.numero}">
+                            ${rated ? '✓ Guardado' : 'Guardar'}
+                        </button>
+                    </div>`;
+                }).join('')
+            }</div>`;
+        }
+
+        /** Guarda/actualiza a nota de um episódio. */
+        async function saveEpisodeNota(episodioId, animeId) {
+            const sel     = document.getElementById('sel-' + episodioId);
+            const btn     = document.getElementById('savebtn-' + episodioId);
+            const nota    = parseInt(sel.value, 10);
+            const userName = document.getElementById('epUsernameInput').value.trim() || 'Anônimo';
+
+            if (!nota || nota < 1 || nota > 10) {
+                sel.style.borderColor = 'var(--danger)';
+                setTimeout(() => sel.style.borderColor = '', 1800);
+                return;
+            }
+
+            btn.disabled   = true;
+            btn.textContent = '...';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/episodes/review`, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({
+                        episodioId,
+                        animeId,
+                        nota,
+                        userName
+                    })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || `HTTP ${res.status}`);
+                }
+
+                const updated = await res.json();
+
+                // Actualiza média exibida
+                const avgEl = document.querySelector(`#eprow-${episodioId} .episode-avg`);
+                if (avgEl) {
+                    const avgText = updated.notaMedia > 0
+                        ? `★ ${updated.notaMedia.toFixed(1)} (${updated.totalNotas})`
+                        : '—';
+                    avgEl.textContent = avgText;
+                }
+
+                // Feedback visual
+                btn.textContent = '✓ Guardado';
+                btn.classList.add('saved');
+                sel.classList.add('rated');
+                showToast(`✅ Ep ${episodioId.split('-').pop()} avaliado com ${nota}/10!`);
+
+            } catch (err) {
+                console.error('Erro ao guardar nota:', err);
+                btn.disabled    = false;
+                btn.textContent = 'Guardar';
+                alert('Erro ao guardar: ' + err.message);
+            }
+        }
+
+        // Recarrega episódios quando o utilizador muda o nome (para buscar notas do novo nome)
+        document.addEventListener('DOMContentLoaded', () => {
+            const epInput = document.getElementById('epUsernameInput');
+            if (epInput) {
+                let debounce;
+                epInput.addEventListener('input', () => {
+                    clearTimeout(debounce);
+                    debounce = setTimeout(() => {
+                        if (currentSeasonId) loadEpisodes(currentSeasonId);
+                    }, 600);
+                });
+            }
+        });
+
+        /* ════════════════════════════════
+           RESENHAS
+        ════════════════════════════════ */
+        async function submitReview() {
+            if (currentRating === 0) {
+                shakeElement(document.getElementById('ratingInput'));
+                document.getElementById('ratingHint').textContent = '⚠️ Selecione uma nota antes de enviar!';
+                document.getElementById('ratingHint').style.color = 'var(--danger)';
+                return;
+            }
+
+            const text = document.getElementById('reviewInput').value.trim();
+            if (!text) {
+                document.getElementById('reviewInput').focus();
+                document.getElementById('reviewInput').style.borderColor = 'var(--danger)';
+                setTimeout(() => document.getElementById('reviewInput').style.borderColor = '', 1800);
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled   = true;
+            btn.textContent = 'Enviando...';
+
+            const payload = {
+                animeId:         String(currentAnime.id),
+                animeTitle:      currentAnime.title,
+                animeImage:      currentAnime.image,
+                userName:        document.getElementById('usernameInput').value.trim() || 'Anônimo',
+                rating:          parseInt(currentRating, 10),
+                comment:         text,
+                containsSpoiler: document.getElementById('spoilerCheck').checked
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || `HTTP ${res.status}`);
+                }
+
+                closeModal();
+                showToast('✅ Resenha enviada com sucesso!');
+                await loadReviews();               // atualiza feed sem F5
+            } catch (err) {
+                console.error('Erro ao enviar resenha:', err);
+                btn.disabled    = false;
+                btn.textContent = 'Enviar Resenha';
+                alert('Erro ao enviar: ' + err.message);
+            }
+        }
+
+        async function loadReviews() {
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const reviews = await res.json();
+                displayReviews(reviews);
+            } catch (err) {
+                console.error('Erro ao carregar resenhas:', err);
+                document.getElementById('reviewsFeed').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <div>Erro ao carregar resenhas</div>
+                        <div style="font-size:0.83rem;margin-top:0.4rem;color:var(--text-muted)">
+                            Verifique se o servidor está em http://localhost:8080
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function displayReviews(reviews) {
+            const feed = document.getElementById('reviewsFeed');
+
+            if (!reviews || reviews.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div>Nenhuma resenha ainda</div>
+                        <div style="font-size:0.9rem;margin-top:0.4rem">Seja o primeiro a avaliar um anime!</div>
+                    </div>`;
+                return;
+            }
+
+            feed.innerHTML = reviews.map(r => {
+                // Suporte aos dois nomes de campos (novo: userName/comment/containsSpoiler
+                // + legado: username/review/hasSpoiler) para compatibilidade total
+                const author   = r.userName || r.username || 'Anônimo';
+                const text     = r.comment  || r.review   || '';
+                const spoiler  = r.containsSpoiler || r.hasSpoiler || false;
+
+                const initial  = author[0].toUpperCase();
+                const stars    = Array.from({ length: 10 }, (_, i) =>
+                    `<span class="s${i < r.rating ? ' on' : ''}">★</span>`
+                ).join('');
+                const dateStr  = r.createdAt
+                    ? new Date(r.createdAt).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' })
+                    : '';
+                const imgSrc   = r.animeImage || 'https://placehold.co/56x80/1f1f26/71717a?text=?';
+
+                const bodyHtml = spoiler
+                    ? `<div class="spoiler-box blurred" onclick="this.classList.toggle('blurred')" title="Clique para revelar">
+                            <div class="spoiler-warning">⚠️ Spoiler — clique para revelar</div>
+                            <div class="spoiler-text">${escapeHtml(text)}</div>
+                       </div>`
+                    : `<div class="review-text">${escapeHtml(text)}</div>`;
+
+                return `
+                <div class="review-card">
+                    <div class="review-top">
+                        <img class="review-anime-thumb" src="${imgSrc}" alt="${escapeHtml(r.animeTitle)}" loading="lazy">
+                        <div class="review-info">
+                            <div class="review-anime-title">${escapeHtml(r.animeTitle)}</div>
+                            <div class="review-author-row">
+                                <div class="review-avatar" aria-hidden="true">${initial}</div>
+                                <span class="review-author-name">${escapeHtml(author)}</span>
+                                ${dateStr ? `<span class="review-date">${dateStr}</span>` : ''}
+                            </div>
+                            <div class="review-stars">
+                                ${stars}
+                                <span class="review-score-badge">${r.rating}/10</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-body">${bodyHtml}</div>
+                    <div class="review-actions">
+                        <button class="btn btn-like" onclick="likeReview('${r.id}', this)" aria-label="Curtir resenha">
+                            ♥ <span class="like-count">${r.likes || 0}</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function likeReview(id, btn) {
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/${id}/like`, { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    btn.querySelector('.like-count').textContent = data.likes;
+                    btn.classList.add('liked');
+                }
+            } catch (err) { console.error('Erro ao curtir:', err); }
+        }
+
+        /* ════════════════════════════════
+           UTILITÁRIOS
+        ════════════════════════════════ */
+        function escapeHtml(str) {
+            if (!str) return '';
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        function shakeElement(el) {
+            el.style.animation = 'none';
+            el.offsetHeight;   // reflow
+            el.style.animation = 'shake 0.4s ease';
+        }
+
+        /* ── Fechar modal ── */
+        document.getElementById('animeModal').addEventListener('click', e => {
+            if (e.target.id === 'animeModal') closeModal();
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+    <style>
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%      { transform: translateX(-6px); }
+            40%      { transform: translateX(6px); }
+            60%      { transform: translateX(-4px); }
+            80%      { transform: translateX(4px); }
+        }
+    </style>
+</body>
+</html>
