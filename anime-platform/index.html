@@ -29,6 +29,16 @@
             --accent-soft:   rgba(124, 58, 237, 0.1);        /* tinta suave de destaque (hovers/fundos) */
             --on-accent:     #ffffff;                        /* texto sobre o destaque */
             --on-success:    #ffffff;                        /* texto sobre o sucesso */
+            /* Marcas das plataformas de streaming — iguais em todos os temas */
+            --netflix:       #e50914;
+            --netflix-glow:  rgba(229, 9, 20, 0.45);
+            --disney:        #113ccf;
+            --disney-glow:   rgba(17, 60, 207, 0.45);
+            --crunchyroll:   #f47521;
+            --crunchyroll-glow: rgba(244, 117, 33, 0.45);
+            --prime:         #00a8e1;
+            --prime-glow:    rgba(0, 168, 225, 0.45);
+            --on-platform:   #ffffff;
         }
 
         /* ===== TEMAS DE CORES (Passo 3) =====
@@ -920,6 +930,17 @@
             .stats-grid { grid-template-columns: 1fr; }
             .stats-btn-label { display: none; }
             .surprise-btn-label { display: none; }
+            /* Barra de Filtros Avançados — empilha em ecrãs pequenos */
+            .filter-bar { padding: 0.6rem 1rem; }
+            .filter-bar-inner { flex-direction: column; align-items: stretch; gap: 0.6rem; }
+            .filter-group { justify-content: space-between; }
+            .filter-select { min-width: 150px; }
+            /* Calendário — colunas mais estreitas com deslizamento horizontal */
+            .calendar-modal { width: 100%; padding: 1rem; }
+            .calendar-day { flex-basis: 210px; min-width: 210px; }
+            .calendar-day-list { max-height: none; }
+            .calendar-card-img { width: 58px; height: 82px; }
+            .calendar-card-title { font-size: 0.88rem; }
         }
 
         @keyframes shake {
@@ -930,52 +951,432 @@
             80%      { transform: translateX(4px); }
         }
 
-        /* ===== Barra de Filtros por Género ===== */
-        .genre-bar {
-            background: var(--bg-secondary);
+        /* ===== Barra de Vistas (Favoritos / Watchlist) — Passo 1 ===== */
+        .view-bar {
+            background: var(--bg-primary);
             border-bottom: 1px solid var(--border);
-            padding: 0.65rem 2rem;
-            overflow-x: auto;
-            scrollbar-width: none;
+            padding: 0.55rem 2rem;
         }
-        .genre-bar::-webkit-scrollbar { display: none; }
-
-        .genre-bar-inner {
+        .view-bar-inner {
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            white-space: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
         }
+        .view-bar-inner::-webkit-scrollbar { display: none; }
 
-        .genre-chip {
+        .view-tab {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.38rem 0.9rem;
-            border-radius: 20px;
+            gap: 0.4rem;
+            padding: 0.45rem 1rem;
+            border-radius: 10px;
             border: 1px solid var(--border);
             background: var(--bg-card);
             color: var(--text-secondary);
-            font-size: 0.82rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             white-space: nowrap;
-            user-select: none;
+            transition: all 0.2s ease;
         }
-        .genre-chip:hover {
+        .view-tab:hover {
             border-color: var(--accent);
             color: var(--text-primary);
             background: var(--accent-soft);
         }
-        .genre-chip.active {
+        .view-tab.active {
             border-color: var(--accent);
             background: var(--accent);
             color: var(--on-accent);
             box-shadow: 0 2px 10px var(--accent-glow);
         }
+        .view-count {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.05rem 0.4rem;
+            border-radius: 10px;
+            background: var(--bg-card-hover);
+            color: var(--text-secondary);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .view-tab.active .view-count { background: rgba(0,0,0,0.25); color: var(--on-accent); }
+
+        /* ===== Botões Favorito / Watchlist nos cards ===== */
+        .card-actions {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            display: flex;
+            gap: 0.35rem;
+            z-index: 2;
+        }
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.55);
+            color: var(--text-secondary);
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        .icon-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; }
+        .icon-btn:hover {
+            transform: scale(1.12);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        .icon-btn.active {
+            color: var(--on-accent);
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 2px 10px var(--accent-glow);
+        }
+        .icon-btn.active svg { fill: currentColor; }
+        .icon-btn:active { transform: scale(0.95); }
+
+        /* ===== Botões Favorito / Watchlist no modal ===== */
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.9rem;
+        }
+        .modal-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .modal-action-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .modal-action-btn:hover {
+            transform: translateY(-1px);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: var(--accent-soft);
+        }
+        .modal-action-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--on-accent);
+            box-shadow: 0 3px 12px var(--accent-glow);
+        }
+        .modal-action-btn.active svg { fill: currentColor; }
+
+        /* ===== Trailer do YouTube — Passo 4 ===== */
+        .modal-action-btn.trailer-btn {
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+        .modal-action-btn.trailer-btn:hover {
+            background: var(--accent);
+            color: var(--on-accent);
+            box-shadow: 0 3px 12px var(--accent-glow);
+        }
+        .modal-action-btn.trailer-btn svg { fill: currentColor; stroke: none; }
+
+        .trailer-overlay { z-index: 1100; }
+        .trailer-modal { max-width: 900px; padding: 1.1rem; }
+        .trailer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.9rem;
+        }
+        .trailer-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .trailer-close {
+            flex-shrink: 0;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0.35rem 0.55rem;
+            border-radius: 8px;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .trailer-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        /* Player responsivo 16:9 */
+        .trailer-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .trailer-frame iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* ===== Calendário Semanal (Simulcast) ===== */
+        .calendar-overlay { z-index: 950; }   /* abaixo do modal de detalhes (1000) */
+        .calendar-modal { max-width: 1240px; width: 92vw; padding: 1.5rem; }
+        .calendar-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .calendar-title { font-size: 1.4rem; font-weight: 700; }
+        .calendar-subtitle { font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        /* Colunas dos dias — deslizamento horizontal em ecrãs pequenos */
+        .calendar-days {
+            display: flex;
+            gap: 0.85rem;
+            overflow-x: auto;
+            padding-bottom: 0.6rem;
+        }
+        .calendar-day {
+            flex: 1 0 250px;
+            min-width: 250px;
+            max-width: 330px;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.05rem;
+        }
+        .calendar-day.today {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent-soft), 0 6px 18px var(--accent-glow);
+        }
+        .calendar-day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding-bottom: 0.6rem;
+            margin-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .calendar-day-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+        .calendar-day.today .calendar-day-name { color: var(--accent); }
+        .calendar-day-count {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.1rem 0.5rem;
+            border-radius: 999px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .calendar-day.today .calendar-day-count {
+            background: var(--accent);
+            color: var(--on-accent);
+            border-color: transparent;
+        }
+        .calendar-day-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .calendar-card {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .calendar-card:hover { background: var(--bg-card-hover); transform: translateX(2px); }
+        .calendar-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .calendar-card-img {
+            width: 68px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 7px;
+            flex-shrink: 0;
+            background: var(--bg-secondary);
+        }
+        .calendar-card-info { min-width: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+        .calendar-card-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .calendar-card-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .calendar-score, .calendar-ep, .calendar-time {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+        }
+        .calendar-score { color: var(--star-filled); }
+        .calendar-ep { color: var(--accent); }
+        .calendar-time { color: var(--text-muted); }
+        /* Selos de plataforma dentro de cada card do calendário */
+        .calendar-badges { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+        .calendar-badges .platform-badge { font-size: 0.68rem; padding: 0.16rem 0.55rem; }
+        /* Estado de carregamento enquanto se resolve o id do Kitsu ao clicar */
+        .calendar-card.loading { opacity: 0.55; pointer-events: none; }
+
+        .calendar-empty { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 1rem 0.5rem; }
+        .calendar-loading, .calendar-error {
+            flex: 1 1 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* ===== Barra de Filtros Avançados (Género + Ordenação) — Passo 3 ===== */
+        .filter-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0.65rem 2rem;
+        }
+        .filter-bar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .select-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .filter-select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 0.45rem 2.2rem 0.45rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+        .filter-select:hover { border-color: var(--accent); background: var(--accent-soft); }
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .filter-select option { background: var(--bg-card); color: var(--text-primary); }
+        .select-arrow {
+            position: absolute;
+            right: 0.7rem;
+            width: 15px;
+            height: 15px;
+            color: var(--text-secondary);
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+        .select-wrap:hover .select-arrow { color: var(--accent); }
+
+        /* ===== Selos de plataforma (cards + modal) ===== */
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.12rem 0.5rem;
+            border-radius: 6px;
+            background: var(--badge-color, var(--accent));
+            color: var(--on-platform);
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1.6;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+        .platform-badge[data-platform="netflix"]     { --badge-color: var(--netflix); }
+        .platform-badge[data-platform="disney"]      { --badge-color: var(--disney); }
+        .platform-badge[data-platform="crunchyroll"] { --badge-color: var(--crunchyroll); }
+        .platform-badge[data-platform="prime"]       { --badge-color: var(--prime); }
+        /* Canto inferior esquerdo: livre dos botões (topo-esq.) e da nota (topo-dir.) */
+        .card-badges {
+            position: absolute;
+            bottom: 0.6rem;
+            left: 0.6rem;
+            z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            max-width: calc(100% - 1.2rem);
+        }
+        .modal-badges {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+        .modal-title-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 0.4rem;
+        }
+        .modal-title-row .modal-title { margin-bottom: 0; }
 
         /* ===== Skeleton Loader ===== */
         @keyframes shimmer {
@@ -1404,6 +1805,17 @@
                 <span class="surprise-btn-label">Surpreende-me!</span>
             </button>
 
+            <!-- Calendário de lançamentos (Simulcast) -->
+            <button class="stats-btn" onclick="openCalendar()" title="Calendário de Lançamentos" aria-label="Calendário de Lançamentos">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8"  y1="2" x2="8"  y2="6"/>
+                    <line x1="3"  y1="10" x2="21" y2="10"/>
+                </svg>
+                <span class="stats-btn-label">Calendário</span>
+            </button>
+
             <button class="stats-btn" onclick="openStatsModal()" title="Minhas Estatísticas" aria-label="Minhas Estatísticas">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="20" x2="18" y2="10"/>
@@ -1435,20 +1847,48 @@
         </div>
     </header>
 
-    <!-- Barra de Filtros por Género -->
-    <nav class="genre-bar" aria-label="Filtrar por género">
-        <div class="genre-bar-inner">
-            <button class="genre-chip active" data-genre="" onclick="setGenreFilter(this)">🌐 Todos</button>
-            <button class="genre-chip" data-genre="action" onclick="setGenreFilter(this)">⚔️ Ação</button>
-            <button class="genre-chip" data-genre="adventure" onclick="setGenreFilter(this)">🗺️ Aventura</button>
-            <button class="genre-chip" data-genre="comedy" onclick="setGenreFilter(this)">😂 Comédia</button>
-            <button class="genre-chip" data-genre="drama" onclick="setGenreFilter(this)">🎭 Drama</button>
-            <button class="genre-chip" data-genre="fantasy" onclick="setGenreFilter(this)">🧙 Fantasia</button>
-            <button class="genre-chip" data-genre="horror" onclick="setGenreFilter(this)">👻 Terror</button>
-            <button class="genre-chip" data-genre="romance" onclick="setGenreFilter(this)">💕 Romance</button>
-            <button class="genre-chip" data-genre="science-fiction" onclick="setGenreFilter(this)">🚀 Sci-Fi</button>
-            <button class="genre-chip" data-genre="sports" onclick="setGenreFilter(this)">⚽ Esportes</button>
-            <button class="genre-chip" data-genre="supernatural" onclick="setGenreFilter(this)">✨ Sobrenatural</button>
+    <!-- Barra de Vistas: Todos / Favoritos / Watchlist (Passo 1) -->
+    <nav class="view-bar" aria-label="Alternar entre listas">
+        <div class="view-bar-inner">
+            <button class="view-tab active" data-view="all"       onclick="setView('all', this)">🌐 Todos</button>
+            <button class="view-tab"        data-view="favorites" onclick="setView('favorites', this)">❤️ Meus Favoritos <span class="view-count" id="favCount">0</span></button>
+            <button class="view-tab"        data-view="watchlist" onclick="setView('watchlist', this)">🔖 Minha Watchlist <span class="view-count" id="wlCount">0</span></button>
+        </div>
+    </nav>
+
+    <!-- Barra de Filtros Avançados: Género + Ordenação (Passo 3) -->
+    <nav class="filter-bar" aria-label="Filtros e ordenação">
+        <div class="filter-bar-inner">
+            <div class="filter-group">
+                <label class="filter-label" for="genreSelect">Género</label>
+                <div class="select-wrap">
+                    <select class="filter-select" id="genreSelect" onchange="onGenreChange(this.value)">
+                        <option value="">🌐 Todos</option>
+                        <option value="action">⚔️ Ação</option>
+                        <option value="adventure">🗺️ Aventura</option>
+                        <option value="comedy">😂 Comédia</option>
+                        <option value="drama">🎭 Drama</option>
+                        <option value="fantasy">🧙 Fantasia</option>
+                        <option value="horror">👻 Terror</option>
+                        <option value="romance">💕 Romance</option>
+                        <option value="science-fiction">🚀 Sci-Fi</option>
+                        <option value="sports">⚽ Esportes</option>
+                        <option value="supernatural">✨ Sobrenatural</option>
+                    </select>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" for="sortSelect">Ordenar por</label>
+                <div class="select-wrap">
+                    <select class="filter-select" id="sortSelect" onchange="onSortChange(this.value)">
+                        <option value="-userCount">🔥 Mais Populares</option>
+                        <option value="-averageRating">⭐ Mais Bem Avaliados</option>
+                        <option value="-startDate">🆕 Mais Recentes / Lançamentos</option>
+                    </select>
+                    <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -1502,9 +1942,28 @@
             <div class="modal-header">
                 <img class="modal-image" id="modalImage" src="" alt="">
                 <div class="modal-info">
-                    <h3 class="modal-title" id="modalTitle"></h3>
+                    <div class="modal-title-row">
+                        <h3 class="modal-title" id="modalTitle"></h3>
+                        <!-- Selos de plataformas — preenchidos por openModal() -->
+                        <span class="modal-badges" id="modalPlatformBadges"></span>
+                    </div>
                     <div class="modal-meta" id="modalMeta"></div>
                     <p class="modal-synopsis" id="modalSynopsis"></p>
+                    <div class="modal-actions">
+                        <button type="button" class="modal-action-btn" id="modalFavBtn" onclick="toggleFromModal('favorites')">
+                            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span>Favorito</span>
+                        </button>
+                        <button type="button" class="modal-action-btn" id="modalWlBtn" onclick="toggleFromModal('watchlist')">
+                            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                            <span>Assistir Mais Tarde</span>
+                        </button>
+                        <!-- Botão Trailer — visível apenas quando o anime tem youtubeVideoId -->
+                        <button type="button" class="modal-action-btn trailer-btn" id="modalTrailerBtn" onclick="openTrailer()" style="display:none;">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                            <span>▶ Assistir Trailer</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1587,6 +2046,38 @@
         </div>
     </div>
 
+    <!-- Modal de Trailer do YouTube (Passo 4) -->
+    <div class="modal-overlay trailer-overlay" id="trailerModal" role="dialog" aria-modal="true" aria-labelledby="trailerTitle">
+        <div class="modal trailer-modal">
+            <div class="trailer-header">
+                <h3 class="trailer-title" id="trailerTitle">▶ Trailer</h3>
+                <button class="trailer-close" onclick="closeTrailer()" aria-label="Fechar trailer">✕</button>
+            </div>
+            <!-- Player 16:9 — youtube-nocookie.com para máxima compatibilidade de incorporação -->
+            <div class="trailer-frame">
+                <iframe id="trailerFrame" src="" title="Trailer do anime" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Calendário Semanal (Simulcast) -->
+    <div class="modal-overlay calendar-overlay" id="calendarModal" role="dialog" aria-modal="true" aria-labelledby="calendarTitle">
+        <div class="modal calendar-modal">
+            <div class="calendar-top">
+                <div>
+                    <h3 class="calendar-title" id="calendarTitle">📅 Calendário Semanal</h3>
+                    <p class="calendar-subtitle">Programação semanal em tempo real · por dia da semana</p>
+                </div>
+                <button class="trailer-close" onclick="closeCalendar()" aria-label="Fechar calendário">✕</button>
+            </div>
+            <div class="calendar-days" id="calendarGrid">
+                <!-- Colunas dos dias preenchidas por loadCalendar() -->
+            </div>
+        </div>
+    </div>
+
     <!-- ===== JavaScript ===== -->
     <script>
     /* ────────────────────────────────────────────────────────────
@@ -1599,6 +2090,8 @@
     const LS_LIKES      = 'anireview_likes';       // chave localStorage curtidas
     const LS_SEEN       = 'anireview_seen';        // chave localStorage episódios vistos
     const LS_THEME      = 'anireview_theme';       // chave localStorage tema visual
+    const LS_FAVORITES  = 'anireview_favorites';   // chave localStorage favoritos
+    const LS_WATCHLIST  = 'anireview_watchlist';   // chave localStorage assistir mais tarde
     const THEMES        = ['purple', 'cyberpunk', 'minimal', 'red'];
 
     /* ── Globais ── */
@@ -1762,6 +2255,12 @@
     function getSeenEps()           { return lsGet(LS_SEEN, {}); }
     function saveSeenEps(seen)      { lsSet(LS_SEEN, seen); }
 
+    /* Favoritos / Watchlist: { [animeId]: { id, title, image, score, subtype, year } } */
+    function getFavorites()         { return lsGet(LS_FAVORITES, {}); }
+    function saveFavorites(favs)    { lsSet(LS_FAVORITES, favs); }
+    function getWatchlist()         { return lsGet(LS_WATCHLIST, {}); }
+    function saveWatchlist(list)    { lsSet(LS_WATCHLIST, list); }
+
     /* ════════════════════════════════════════════════════════════
        TEMA VISUAL (Passo 3)
        Aplica o tema via atributo data-theme no <html>, atualiza
@@ -1801,6 +2300,7 @@
         document.addEventListener('click', closeThemeMenu);
 
         buildStarInput();
+        updateViewCounts();        // contadores de Favoritos / Watchlist
         loadPopularAnimes();
         renderReviewsFeed();
 
@@ -1865,109 +2365,408 @@
         return (parseFloat(raw) / 10).toFixed(1);
     }
 
-    async function loadPopularAnimes() {
-        setGridLoading();
+    /* ════════════════════════════════════════════════════════════
+       FILTROS AVANÇADOS & ORDENAÇÃO (Passo 3)
+       Estado dos filtros + carregamento unificado do catálogo.
+    ════════════════════════════════════════════════════════════ */
+    let _activeGenre  = '';              // ex: 'action' | '' (todos)
+    let _activeSort   = '-userCount';    // ex: '-userCount' | '-averageRating' | '-startDate'
+    let _catalogReqId = 0;               // guarda contra respostas fora de ordem
+
+    /**
+     * Monta a query do catálogo com os filtros activos (ordenção, género e
+     * texto de busca) e actualiza a grelha principal dinamicamente.
+     */
+    async function loadFilteredCatalog() {
+        const q     = (document.getElementById('searchInput').value || '').trim();
+        const reqId = ++_catalogReqId;
+
+        const params = [`page[limit]=20`, `sort=${_activeSort}`];
+        if (_activeGenre) params.push(`filter[categories]=${encodeURIComponent(_activeGenre)}`);
+        if (q)            params.push(`filter[text]=${encodeURIComponent(q)}`);
+
+        setGridLoading(q ? 'Buscando...' : 'Carregando...');
         try {
-            const res  = await fetch(`${KITSU_BASE}/anime?page[limit]=20&sort=-userCount`, { headers: KITSU_HEADERS });
+            const res = await fetch(`${KITSU_BASE}/anime?${params.join('&')}`, { headers: KITSU_HEADERS });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
+            if (reqId !== _catalogReqId) return;   // resposta obsoleta (nova busca já em curso)
             displayAnimes(data.data);
         } catch (err) {
+            if (reqId !== _catalogReqId) return;
             console.error('Erro ao carregar catálogo:', err);
             setGridError('Não foi possível carregar o catálogo. Verifique sua conexão.');
         }
     }
 
-    async function searchAnimes() {
-        const q = document.getElementById('searchInput').value.trim();
-        if (!q) {
-            // Se há género activo, recarrega por género; senão popular
-            if (_activeGenre) { loadByGenre(_activeGenre); } else { loadPopularAnimes(); }
-            return;
-        }
+    /* Mantidas por compatibilidade: ambas delegam no carregamento unificado */
+    function loadPopularAnimes() { return loadFilteredCatalog(); }
+    function loadByGenre(genre)  { _activeGenre = genre || ''; return loadFilteredCatalog(); }
 
-        // Ao digitar texto livre, desactiva o chip de género
-        document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
-        document.querySelector('.genre-chip[data-genre=""]')?.classList.add('active');
-        _activeGenre = '';
+    function searchAnimes() {
+        activateAllViewTab();   // pesquisar volta sempre para a vista do catálogo
+        loadFilteredCatalog();
+    }
 
-        setGridLoading('Buscando...');
-        try {
-            const res  = await fetch(
-                `${KITSU_BASE}/anime?filter[text]=${encodeURIComponent(q)}&page[limit]=20`,
-                { headers: KITSU_HEADERS }
-            );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            displayAnimes(data.data);
-        } catch (err) {
-            console.error('Erro na busca:', err);
-            setGridError('Erro na busca. Tente novamente.');
+    /** Chamado pelo <select id="genreSelect"> */
+    function onGenreChange(value) {
+        _activeGenre = value || '';
+        activateAllViewTab();
+        loadFilteredCatalog();
+    }
+
+    /** Chamado pelo <select id="sortSelect"> */
+    function onSortChange(value) {
+        _activeSort = value || '-userCount';
+        activateAllViewTab();
+        loadFilteredCatalog();
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       PLATAFORMAS DE STREAMING (Netflix · Disney+ · Crunchyroll · Prime Video)
+       Listas curadas de IDs do Kitsu — identificam em que serviços cada
+       anime está disponível e alimentam os selos nos cards e no modal.
+       Um mesmo anime pode pertencer a mais do que uma plataforma.
+    ════════════════════════════════════════════════════════════ */
+    const PLATFORM_LISTS = {
+        // 🔴 Netflix — originais e clássicos do catálogo
+        netflix: [
+            '43248', // Cyberpunk: Edgerunners
+            '13230', // Devilman: Crybaby
+            '13529', // Castlevania
+            '13140', // Baki
+            '42147', // BEASTARS
+            '12',    // One Piece
+            '41204', // Aggretsuko
+            '42438', // Great Pretender
+            '42208', // Levius
+            '14125', // Ultraman
+            '13698', // Rilakkuma to Kaoru-san
+            '11880', // B: The Beginning
+            '42040', // Dorohedoro
+            '42036', // Ghost in the Shell: SAC_2045
+            '42615', // Japan Sinks 2020
+            '43704', // Trese
+            '43730', // The Witcher: Nightmare of the Wolf
+            '44207', // Shuumatsu no Walküre (Record of Ragnarok)
+            '13252', // Kakegurui
+            '12230', // Violet Evergarden
+            '8699',  // Nanatsu no Taizai
+            '21',    // Neon Genesis Evangelion
+            '1376',  // Death Note
+            '3936',  // Fullmetal Alchemist: Brotherhood
+            '6448',  // Hunter x Hunter (2011)
+            '7158',  // JoJo no Kimyou na Bouken
+            '6589',  // Sword Art Online
+            '8271',  // Tokyo Ghoul
+            '11110', // Boku dake ga Inai Machi (Erased)
+            '8403',  // Shigatsu wa Kimi no Uso (Your Lie in April)
+            '41370', // Kimetsu no Yaiba
+            '176',   // A Viagem de Chihiro
+            '395',   // O Castelo Animado
+            '142',   // Princesa Mononoke
+            '482',   // O Meu Vizinho Totoro
+        ],
+        // 🔵 Disney+ — destaques do catálogo (Star / Hulu no Brasil)
+        disney: [
+            '43321', // Tokyo Revengers
+            '43078', // BLEACH: Sennen Kessen-hen
+            '44032', // Summer Time Rendering
+            '46641', // Tengoku Daimakyou (Heavenly Delusion)
+            '46415', // Undead Unluck
+            '43804', // Star Wars: Visions
+            '47078', // Ishura
+            '46868', // SAND LAND
+            '46840', // Sentai Daishikkaku
+            '46869', // Yozakura-san Chi no Daisakusen
+            '47271', // WIND BREAKER
+            '46477', // SYNDUALITY Noir
+            '47740', // The Fable
+            '45218', // Black★Rock Shooter: DAWN FALL
+            '44974', // Yojouhan Time Machine Blues
+        ],
+        // 🟠 Crunchyroll — populares e clássicos do streaming de anime
+        crunchyroll: [
+            '46320', // Dungeon Meshi (Delicious in Dungeon)
+            '41084', // Vinland Saga
+            '41083', // Dororo
+            '13988', // Banana Fish
+            '10036', // Koutetsujou no Kabaneri
+            '8195',  // Shingeki no Bahamut: Genesis
+            '11957', // 91 Days
+            '13096', // Inuyashiki
+            '13660', // Wotaku ni Koi wa Muzukashii
+            '12230', // Violet Evergarden
+            '14190', // Grand Blue
+            '11209', // Re:Zero kara Hajimeru Isekai Seikatsu
+            '7000',  // Psycho-Pass
+            '13273', // Made in Abyss
+            '13261', // Princess Principal
+            '4630',  // Katanagatari
+            '13057', // Shoukoku no Altair
+            '42379', // Given
+            // Grandes títulos mainstream (catálogo Crunchyroll)
+            '7442',  // Shingeki no Kyojin
+            '42422', // Shingeki no Kyojin: The Final Season
+            '11469', // Boku no Hero Academia
+            '43108', // Boku no Hero Academia 5
+            '10740', // One Punch Man
+            '12566', // One Punch Man 2
+            '41370', // Kimetsu no Yaiba
+            '44081', // Kimetsu no Yaiba: Yuukaku-hen
+            '42765', // Jujutsu Kaisen
+            '5646',  // Steins;Gate
+            '11',    // Naruto
+            '1555',  // Naruto: Shippuuden
+            '41312', // Yakusoku no Neverland
+            '3532',  // Toradora!
+            '7880',  // No Game No Life
+            '1415',  // Code Geass: Lelouch of the Rebellion
+            '2634',  // Code Geass: Lelouch of the Rebellion R2
+            '7881',  // Noragami
+            '8147',  // Kiseijuu: Sei no Kakuritsu
+            '11578', // Mob Psycho 100
+            '1',     // Cowboy Bebop
+            '9967',  // Shokugeki no Souma
+            '6028',  // Fate/Zero
+            '4604',  // Angel Beats!
+            '1801',  // Tengen Toppa Gurren Lagann
+            '9969',  // Death Parade
+            '6266',  // Mirai Nikki
+            '7712',  // Kill la Kill
+            '42080', // Dr. Stone
+            '10941', // Kono Subarashii Sekai ni Shukufuku wo!
+            '11937', // Kono Subarashii Sekai ni Shukufuku wo! 2
+            '3919',  // Bakemonogatari
+            '3505',  // Clannad: After Story
+            '41373', // Kaguya-sama wa Kokurasetai
+            '4676',  // Fairy Tail
+            '5940',  // Ao no Exorcist
+            '8133',  // Haikyuu!!
+            '10076', // Haikyuu!! Second Season
+            '8640',  // Ansatsu Kyoushitsu
+            '10877', // Ansatsu Kyoushitsu 2nd Season
+            '11614', // Kimi no Na wa.
+            '10028', // Koe no Katachi
+        ],
+        // 💙 Prime Video — catálogo Amazon (inclui antigos exclusivos Anime Strike)
+        prime: [
+            '13689', // Golden Kamuy
+            '42346', // Mugen no Juunin: Immortal (Blade of the Immortal)
+            '10036', // Koutetsujou no Kabaneri
+            '14018', // Hinamatsuri
+            '14082', // Killing Bites
+            '13708', // Devils Line
+            '13939', // Beatless
+            '12297', // Juushinki Pandora
+            '13135', // Sword Gai
+            '2684',  // Spice and Wolf
+            '41083', // Dororo
+            '41084', // Vinland Saga
+            '13988', // Banana Fish
+            '11957', // 91 Days
+            '13096', // Inuyashiki
+            '13057', // Shoukoku no Altair
+            '14190', // Grand Blue
+            '13261', // Princess Principal
+            '4630',  // Katanagatari
+            '8195',  // Shingeki no Bahamut: Genesis
+            '13660', // Wotaku ni Koi wa Muzukashii
+            '13950', // Hakumei to Mikochi
+        ],
+    };
+
+    /** Texto de cada selo de plataforma */
+    const PLATFORM_BADGES = {
+        netflix:     'Netflix',
+        disney:      'Disney+',
+        crunchyroll: 'Crunchyroll',
+        prime:       'Prime Video',
+    };
+
+    /** Índices Set(id) por plataforma — consultas O(1) */
+    const _platformSets = {};
+    Object.keys(PLATFORM_LISTS).forEach(k => {
+        _platformSets[k] = new Set(PLATFORM_LISTS[k].map(String));
+    });
+
+    /** Plataformas onde o anime está disponível (lista de chaves) */
+    function platformsFor(id) {
+        const sid = String(id);
+        return Object.keys(_platformSets).filter(k => _platformSets[k].has(sid));
+    }
+
+    /** Selos HTML de um anime (vazio se não pertencer a nenhuma plataforma) */
+    function platformBadgesHtml(id) {
+        const keys = platformsFor(id);
+        if (keys.length === 0) return '';
+        return keys.map(k =>
+            `<span class="platform-badge" data-platform="${k}">${PLATFORM_BADGES[k]}</span>`
+        ).join('');
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       FAVORITOS & WATCHLIST (Passo 1)
+       Estruturas em localStorage; render das vistas e sincronização
+       dos botões (coração ❤️ e marcador 🔖).
+    ════════════════════════════════════════════════════════════ */
+    const ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    const ICON_BOOKMARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+
+    let _activeView = 'all';   // 'all' | 'favorites' | 'watchlist'
+    let _cardData   = {};      // id -> snapshot dos cards actualmente no grid
+
+    function isFavorite(id)    { return !!getFavorites()[id]; }
+    function isInWatchlist(id) { return !!getWatchlist()[id]; }
+
+    /** Normaliza um item da API Kitsu no formato guardado em localStorage */
+    function normalizeAnime(item) {
+        const a = item.attributes || {};
+        return {
+            id:      String(item.id),
+            title:   a.canonicalTitle || 'Sem título',
+            image:   a.posterImage?.small || '',
+            score:   kitsuScore(a.averageRating),
+            subtype: a.subtype || '?',
+            year:    a.startDate ? a.startDate.slice(0, 4) : '?',
+        };
+    }
+
+    /** Alterna um anime numa lista ('favorites' | 'watchlist'); devolve o novo estado */
+    function toggleInList(listKey, id, data) {
+        const store = listKey === 'favorites' ? getFavorites() : getWatchlist();
+        if (store[id]) { delete store[id]; } else { store[id] = data; }
+        (listKey === 'favorites' ? saveFavorites : saveWatchlist)(store);
+        return !!store[id];
+    }
+
+    /** Actualiza o estado visual dos botões de um anime no grid e no modal */
+    function syncItemButtons(id) {
+        const fav = isFavorite(id), wl = isInWatchlist(id);
+        document.querySelectorAll(`.card-fav-btn[data-id="${id}"]`).forEach(b => b.classList.toggle('active', fav));
+        document.querySelectorAll(`.card-wl-btn[data-id="${id}"]`) .forEach(b => b.classList.toggle('active', wl));
+        if (currentAnime && currentAnime.id === String(id)) {
+            document.getElementById('modalFavBtn')?.classList.toggle('active', fav);
+            document.getElementById('modalWlBtn') ?.classList.toggle('active', wl);
         }
     }
 
-    /* ── Filtro por género ── */
-    let _activeGenre = '';
+    /** Actualiza os contadores nas abas de vista */
+    function updateViewCounts() {
+        const fc = document.getElementById('favCount');
+        const wc = document.getElementById('wlCount');
+        if (fc) fc.textContent = Object.keys(getFavorites()).length;
+        if (wc) wc.textContent = Object.keys(getWatchlist()).length;
+    }
 
-    function setGenreFilter(btn) {
-        // Desactiva chip anterior
-        document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        _activeGenre = btn.dataset.genre || '';
+    /** Chamado pelos botões nos cards */
+    function toggleListItem(event, listKey, id) {
+        event.stopPropagation();   // não abre o modal do card
+        const data   = _cardData[id] || { id };
+        const active = toggleInList(listKey, id, data);
+        syncItemButtons(id);
+        updateViewCounts();
+        // Numa vista filtrada, remove imediatamente o card que deixou de pertencer à lista
+        if (_activeView !== 'all') renderActiveView();
+        else showToast(active
+            ? (listKey === 'favorites' ? '❤️ Adicionado aos favoritos' : '🔖 Adicionado à watchlist')
+            : (listKey === 'favorites' ? 'Removido dos favoritos' : 'Removido da watchlist'));
+    }
 
-        // Limpa a searchbar e dispara carregamento filtrado
-        document.getElementById('searchInput').value = '';
-        if (_activeGenre) {
-            loadByGenre(_activeGenre);
+    /** Chamado pelos botões dentro do modal de detalhes */
+    function toggleFromModal(listKey) {
+        if (!currentAnime) return;
+        const data = {
+            id:      currentAnime.id,
+            title:   currentAnime.title,
+            image:   currentAnime.image,
+            score:   currentAnime.score,
+            subtype: currentAnime.type || '?',
+            year:    currentAnime.year || '?',
+        };
+        const active = toggleInList(listKey, currentAnime.id, data);
+        syncItemButtons(currentAnime.id);
+        updateViewCounts();
+        if (_activeView !== 'all') renderActiveView();
+        showToast(active
+            ? (listKey === 'favorites' ? '❤️ Adicionado aos favoritos' : '🔖 Adicionado à watchlist')
+            : (listKey === 'favorites' ? 'Removido dos favoritos' : 'Removido da watchlist'));
+    }
+
+    /** Muda a vista activa e re-renderiza */
+    function setView(view, btn) {
+        _activeView = view;
+        document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+        (btn || document.querySelector(`.view-tab[data-view="${view}"]`))?.classList.add('active');
+        renderActiveView();
+    }
+
+    /** Re-renderiza o grid conforme a vista activa */
+    function renderActiveView() {
+        updateViewCounts();
+        if (_activeView === 'favorites') {
+            const items = Object.values(getFavorites());
+            if (items.length === 0) { setGridEmpty('❤️', 'Ainda não tens favoritos. Toca no coração de um anime para o guardar.'); return; }
+            renderCards(items);
+        } else if (_activeView === 'watchlist') {
+            const items = Object.values(getWatchlist());
+            if (items.length === 0) { setGridEmpty('🔖', 'A tua watchlist está vazia. Guarda animes para ver mais tarde.'); return; }
+            renderCards(items);
         } else {
-            loadPopularAnimes();
+            loadFilteredCatalog();
         }
     }
 
-    async function loadByGenre(genre) {
-        setGridLoading(`A carregar ${genre}...`);
-        try {
-            const res = await fetch(
-                `${KITSU_BASE}/anime?filter[categories]=${encodeURIComponent(genre)}&page[limit]=20&sort=-userCount`,
-                { headers: KITSU_HEADERS }
-            );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            displayAnimes(data.data);
-        } catch (err) {
-            console.error('Erro ao filtrar por género:', err);
-            setGridError('Erro ao filtrar. Tente novamente.');
-        }
+    /** Volta a vista para "Todos" (usado ao pesquisar/filtrar por género) */
+    function activateAllViewTab() {
+        _activeView = 'all';
+        document.querySelectorAll('.view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === 'all'));
     }
 
     function displayAnimes(list) {
+        renderCards((list || []).map(normalizeAnime));
+    }
+
+    function renderCards(cards) {
         const grid = document.getElementById('animeGrid');
-        if (!list || list.length === 0) {
-            grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div>Nenhum anime encontrado</div></div>`;
-            return;
-        }
-        grid.innerHTML = list.map(item => {
-            const a     = item.attributes;
-            const title = escapeHtml(a.canonicalTitle || 'Sem título');
-            const cover = a.posterImage?.small || 'https://placehold.co/200x300/1f1f26/71717a?text=Sem+Capa';
-            const score = kitsuScore(a.averageRating);
-            const year  = a.startDate ? a.startDate.slice(0, 4) : '?';
+        _cardData = {};
+        cards.forEach(c => { _cardData[c.id] = c; });
+        grid.innerHTML = cards.map(c => {
+            const title = escapeHtml(c.title);
+            const cover = c.image || 'https://placehold.co/200x300/1f1f26/71717a?text=Sem+Capa';
+            const fav   = isFavorite(c.id)    ? 'active' : '';
+            const wl    = isInWatchlist(c.id) ? 'active' : '';
+            const badges = platformBadgesHtml(c.id);
             return `
-            <div class="anime-card" onclick="openModal('${item.id}')" tabindex="0"
-                 onkeypress="if(event.key==='Enter') openModal('${item.id}')">
+            <div class="anime-card" onclick="openModal('${c.id}')" tabindex="0"
+                 onkeypress="if(event.key==='Enter') openModal('${c.id}')">
                 <div class="anime-card-image-container">
                     <img class="anime-card-image" src="${cover}" alt="${title}" loading="lazy">
-                    ${score ? `<div class="anime-card-score">
+                    ${badges ? `<div class="card-badges">${badges}</div>` : ''}
+                    <div class="card-actions">
+                        <button type="button" class="icon-btn card-fav-btn ${fav}" data-id="${c.id}"
+                                title="Favorito" aria-label="Marcar como favorito"
+                                onclick="toggleListItem(event,'favorites','${c.id}')">${ICON_HEART}</button>
+                        <button type="button" class="icon-btn card-wl-btn ${wl}" data-id="${c.id}"
+                                title="Assistir mais tarde" aria-label="Assistir mais tarde"
+                                onclick="toggleListItem(event,'watchlist','${c.id}')">${ICON_BOOKMARK}</button>
+                    </div>
+                    ${c.score ? `<div class="anime-card-score">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="#fbbf24">
                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>${score}</div>` : ''}
+                        </svg>${c.score}</div>` : ''}
                 </div>
                 <div class="anime-card-info">
                     <div class="anime-card-title">${title}</div>
-                    <div class="anime-card-meta">${a.subtype || '?'} • ${year}</div>
+                    <div class="anime-card-meta">${c.subtype} • ${c.year}</div>
                 </div>
             </div>`;
         }).join('');
+    }
+
+    function setGridEmpty(icon, msg) {
+        document.getElementById('animeGrid').innerHTML =
+            `<div class="empty-state"><div class="empty-icon">${icon}</div><div>${msg}</div></div>`;
     }
 
     function setGridLoading(msg = '') {
@@ -2421,6 +3220,7 @@
                 episodes: a.episodeCount,
                 year:     a.startDate ? a.startDate.slice(0, 4) : null,
                 totalEpisodes: null,  // preenchido dinamicamente após carregar episódios
+                youtubeVideoId: a.youtubeVideoId || null,  // trailer oficial (Passo 4)
             };
 
             document.getElementById('modalImage').src = currentAnime.image;
@@ -2428,8 +3228,16 @@
             document.getElementById('modalTitle').textContent    = currentAnime.title;
             document.getElementById('modalSynopsis').textContent = currentAnime.synopsis;
 
+            // Selos das plataformas onde o anime está disponível
+            document.getElementById('modalPlatformBadges').innerHTML = platformBadgesHtml(currentAnime.id);
+
+            // Só mostra o botão "Assistir Trailer" se o anime tiver trailer do YouTube
+            document.getElementById('modalTrailerBtn').style.display =
+                currentAnime.youtubeVideoId ? '' : 'none';
+
             updateModalMeta();
             resetForm();
+            syncItemButtons(currentAnime.id);   // estado inicial dos botões Favorito/Watchlist
             document.getElementById('animeModal').classList.add('active');
             // Ao clicar numa recomendação, garante que o novo anime aparece no topo
             document.querySelector('#animeModal .modal').scrollTop = 0;
@@ -2465,12 +3273,370 @@
     }
 
     function closeModal() {
+        closeTrailer();   // garante que o trailer (e o seu áudio) para ao fechar o anime
         closeSeasonDropdown();
         document.getElementById('animeModal').classList.remove('active');
         currentAnime = null;
         // Cancela recomendações em curso e esconde a secção
         _recsRequestId++;
         document.getElementById('recommendationsSection').style.display = 'none';
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       TRAILER DO YOUTUBE (Passo 4)
+       Player 16:9 embutido diretamente via youtube-nocookie.com.
+    ════════════════════════════════════════════════════════════ */
+    const YT_EMBED_BASE = 'https://www.youtube-nocookie.com/embed/';
+
+    function openTrailer() {
+        if (!currentAnime || !currentAnime.youtubeVideoId) return;
+        document.getElementById('trailerTitle').textContent = currentAnime.title;
+        // autoplay=1 arranca a reprodução; rel=0 evita recomendações externas
+        document.getElementById('trailerFrame').src =
+            `${YT_EMBED_BASE}${encodeURIComponent(currentAnime.youtubeVideoId)}?autoplay=1&rel=0&enablejsapi=1`;
+        document.getElementById('trailerModal').classList.add('active');
+    }
+
+    function closeTrailer() {
+        const modal = document.getElementById('trailerModal');
+        if (!modal.classList.contains('active')) return;
+        modal.classList.remove('active');
+        // Limpar a URL do iframe interrompe o vídeo e o áudio imediatamente
+        document.getElementById('trailerFrame').src = '';
+        document.getElementById('trailerTitle').textContent = '';
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       CALENDÁRIO SEMANAL (SIMULCAST) — programação em tempo real
+       Fonte principal : AniList GraphQL — agenda real dos animes em
+                         exibição (status RELEASING) via nextAiringEpisode.
+       Fallback        : catálogo do Kitsu (filter[status]=current).
+       Os animes são agrupados automaticamente por dia da semana
+       (Segunda → Domingo), com capa, título, horário, episódio e selos.
+    ════════════════════════════════════════════════════════════ */
+    const WEEK_DAYS    = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const DAY_ORDER    = [1, 2, 3, 4, 5, 6, 0];   // começa na Segunda-feira
+    const ANILIST_URL  = 'https://graphql.anilist.co';
+    const CALENDAR_PAGES = 3;                      // AniList: 3 × 50 = até 150 animes em exibição
+    let   _calendarLoaded    = false;
+    let   _calendarItems     = {};                 // key → item (para o clique nos cards)
+    let   _kitsuIndex        = null;               // Map(título normalizado → id Kitsu)
+    let   _kitsuIndexPromise = null;
+
+    function openCalendar() {
+        document.getElementById('calendarModal').classList.add('active');
+        if (!_calendarLoaded) loadCalendar();
+    }
+
+    function closeCalendar() {
+        document.getElementById('calendarModal').classList.remove('active');
+    }
+
+    /** Distribuição determinística por id — mantém o mesmo anime sempre no mesmo dia */
+    function dayFromId(id) {
+        const s = String(id);
+        let h = 0;
+        for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+        return h % 7;
+    }
+
+    /** Estimativa do episódio mais recente (cadência semanal a partir de startDate) */
+    function estimateLatestEpisode(a) {
+        const total = a.episodeCount;
+        if (!a.startDate) return total || null;
+        const start = new Date(`${a.startDate}T00:00:00Z`);
+        if (isNaN(start.getTime())) return total || null;
+        const weeks = Math.floor((Date.now() - start.getTime()) / (7 * 24 * 3600 * 1000));
+        let n = weeks + 1;
+        if (n < 1) n = 1;
+        if (total && n > total) n = total;
+        return n;
+    }
+
+    /** Normaliza um título para comparação entre AniList e Kitsu */
+    function normalizeTitle(str) {
+        return String(str || '')
+            .toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    /** Hora local (HH:MM) a partir de um timestamp Unix em segundos */
+    function formatAiringTime(unixSeconds) {
+        const d = new Date(unixSeconds * 1000);
+        if (isNaN(d.getTime())) return '';
+        return d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    /**
+     * Índice título → id do Kitsu (animes em exibição). Construído uma só vez
+     * e usado para mapear os títulos da AniList para o catálogo do Kitsu, o que
+     * permite atribuir automaticamente os selos de plataforma aos cards.
+     */
+    function buildKitsuIndex() {
+        if (_kitsuIndex) return Promise.resolve(_kitsuIndex);
+        if (_kitsuIndexPromise) return _kitsuIndexPromise;
+        _kitsuIndexPromise = (async () => {
+            const idx  = new Map();
+            const reqs = Array.from({ length: 5 }, (_, i) =>
+                fetch(`${KITSU_BASE}/anime?filter[status]=current&sort=-userCount&page[limit]=20&page[offset]=${i * 20}`,
+                      { headers: KITSU_HEADERS })
+                    .then(r => r.ok ? r.json() : { data: [] })
+                    .catch(() => ({ data: [] }))
+            );
+            const results = await Promise.all(reqs);
+            results.forEach(r => (r.data || []).forEach(it => {
+                const a = it.attributes || {};
+                if (a.nsfw === true) return;   // ignora conteúdo +18 / NSFW
+                const t = a.titles || {};
+                [a.canonicalTitle, t.en, t.en_jp, t.ja_jp].filter(Boolean).forEach(name => {
+                    const key = normalizeTitle(name);
+                    if (key && !idx.has(key)) idx.set(key, String(it.id));
+                });
+            }));
+            _kitsuIndex = idx;
+            return idx;
+        })();
+        return _kitsuIndexPromise;
+    }
+
+    /** Procura o id do Kitsu a partir de uma lista de títulos candidatos */
+    async function resolveKitsuId(titles) {
+        const list = (Array.isArray(titles) ? titles : [titles]).filter(Boolean);
+        if (!list.length) return null;
+        try {
+            const idx = await buildKitsuIndex();
+            for (const t of list) {
+                const hit = idx.get(normalizeTitle(t));
+                if (hit) return hit;
+            }
+        } catch (_) { /* segue para a busca directa */ }
+        for (const t of list) {
+            try {
+                const res = await fetch(`${KITSU_BASE}/anime?filter[text]=${encodeURIComponent(t)}&page[limit]=1`,
+                                        { headers: KITSU_HEADERS });
+                if (!res.ok) continue;
+                const json  = await res.json();
+                const first = (json.data || [])[0];
+                if (first) return String(first.id);
+            } catch (_) { /* tenta o próximo título */ }
+        }
+        return null;
+    }
+
+    /** Fonte principal — AniList GraphQL: animes em exibição ordenados por popularidade */
+    async function fetchCalendarFromAniList() {
+        const query = `
+            query ($page: Int) {
+                Page(page: $page, perPage: 50) {
+                    media(type: ANIME, status: RELEASING, sort: POPULARITY_DESC, isAdult: false) {
+                        id
+                        idMal
+                        isAdult
+                        title { romaji english native }
+                        coverImage { medium }
+                        averageScore
+                        episodes
+                        nextAiringEpisode { episode airingAt }
+                    }
+                }
+            }`;
+        const reqs = Array.from({ length: CALENDAR_PAGES }, (_, i) =>
+            fetch(ANILIST_URL, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body:    JSON.stringify({ query, variables: { page: i + 1 } }),
+            })
+            .then(r => r.ok ? r.json() : null)
+            .catch(() => null)
+        );
+        const results = await Promise.all(reqs);
+        const seen    = new Set();
+        const out     = [];
+        results.forEach(r => {
+            const media = (r && r.data && r.data.Page && r.data.Page.media) || [];
+            media.forEach(m => {
+                if (!m || seen.has(m.id)) return;
+                if (m.isAdult === true) return;   // ignora conteúdo +18 / NSFW
+                seen.add(m.id);
+                const t      = m.title || {};
+                const titles = [t.english, t.romaji, t.native].filter(Boolean);
+                const cover  = m.coverImage && m.coverImage.medium;
+                if (!titles.length || !cover) return;
+                const next    = m.nextAiringEpisode;
+                const day     = next ? new Date(next.airingAt * 1000).getDay() : dayFromId(m.id);
+                const episode = next
+                    ? (next.episode > 1 ? next.episode - 1 : null)
+                    : (m.episodes || null);
+                out.push({
+                    key:     `al-${m.id}`,
+                    titles,
+                    title:   t.english || t.romaji || t.native,
+                    cover,
+                    score:   m.averageScore ? (m.averageScore / 10).toFixed(1) : null,
+                    day,
+                    time:    next ? formatAiringTime(next.airingAt) : '',
+                    episode,
+                    kitsuId: null,
+                });
+            });
+        });
+        return out;
+    }
+
+    /** Fallback — catálogo de animes em exibição do Kitsu */
+    async function fetchCalendarFromKitsu() {
+        const reqs = Array.from({ length: 5 }, (_, i) =>
+            fetch(`${KITSU_BASE}/anime?filter[status]=current&sort=-userCount&page[limit]=20&page[offset]=${i * 20}`,
+                  { headers: KITSU_HEADERS })
+                .then(r => r.ok ? r.json() : { data: [] })
+                .catch(() => ({ data: [] }))
+        );
+        const results = await Promise.all(reqs);
+        const seen    = new Set();
+        const out     = [];
+        results.forEach(r => (r.data || []).forEach(it => {
+            if (seen.has(it.id)) return;
+            const a = it.attributes || {};
+            if (a.nsfw === true) return;   // ignora conteúdo +18 / NSFW
+            seen.add(it.id);
+            if (!a.posterImage || !a.posterImage.small) return;
+            let day, time = '';
+            if (a.nextRelease) {
+                const d = new Date(a.nextRelease);
+                if (!isNaN(d.getTime())) {
+                    day  = d.getDay();
+                    time = formatAiringTime(d.getTime() / 1000);
+                }
+            }
+            if (day === undefined) day = dayFromId(it.id);
+            const t      = a.titles || {};
+            const titles = [a.canonicalTitle, t.en, t.en_jp, t.ja_jp].filter(Boolean);
+            out.push({
+                key:     `kt-${it.id}`,
+                titles,
+                title:   a.canonicalTitle || titles[0] || 'Sem título',
+                cover:   a.posterImage.small,
+                score:   kitsuScore(a.averageRating),
+                day,
+                time,
+                episode: estimateLatestEpisode(a),
+                kitsuId: String(it.id),
+            });
+        }));
+        return out;
+    }
+
+    function setCalendarLoading() {
+        document.getElementById('calendarGrid').innerHTML =
+            `<div class="calendar-loading"><div class="loading-spinner"></div><div>A carregar a programação da semana...</div></div>`;
+    }
+
+    function setCalendarError(msg) {
+        document.getElementById('calendarGrid').innerHTML =
+            `<div class="calendar-error"><div>⚠️ ${msg}</div></div>`;
+    }
+
+    async function loadCalendar() {
+        setCalendarLoading();
+        try {
+            // Índice Kitsu em paralelo — alimenta os selos de plataforma
+            const indexPromise = buildKitsuIndex().catch(() => null);
+
+            // 1) Fonte principal: AniList · 2) Fallback: Kitsu
+            let items = await fetchCalendarFromAniList();
+            if (!items.length) items = await fetchCalendarFromKitsu();
+            if (!items.length) { setCalendarError('Não foi possível carregar a programação semanal.'); return; }
+
+            // Mapeia (quando possível) cada anime para o id do Kitsu
+            const idx = await indexPromise;
+            if (idx) {
+                items.forEach(it => {
+                    if (it.kitsuId) return;
+                    for (const t of it.titles) {
+                        const hit = idx.get(normalizeTitle(t));
+                        if (hit) { it.kitsuId = hit; break; }
+                    }
+                });
+            }
+
+            _calendarLoaded = true;
+            renderCalendar(items);
+        } catch (err) {
+            console.error('Erro ao carregar o calendário:', err);
+            setCalendarError('Não foi possível carregar a programação semanal.');
+        }
+    }
+
+    /** Desenha o calendário: todos os animes agrupados por dia da semana */
+    function renderCalendar(items) {
+        const buckets = [[], [], [], [], [], [], []];
+        _calendarItems = {};
+        items.forEach(it => {
+            const day = (it.day >= 0 && it.day <= 6) ? it.day : dayFromId(it.key);
+            buckets[day].push(it);
+        });
+
+        const today = new Date().getDay();
+        document.getElementById('calendarGrid').innerHTML = DAY_ORDER.map(day => {
+            const list = buckets[day];
+            return `
+            <div class="calendar-day${day === today ? ' today' : ''}">
+                <div class="calendar-day-header">
+                    <span class="calendar-day-name">${WEEK_DAYS[day]}</span>
+                    <span class="calendar-day-count">${list.length}</span>
+                </div>
+                <div class="calendar-day-list">
+                    ${list.length ? list.map(renderCalendarCard).join('') : '<div class="calendar-empty">Sem lançamentos</div>'}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderCalendarCard(item) {
+        _calendarItems[item.key] = item;
+        const title  = escapeHtml(item.title || 'Sem título');
+        const cover  = item.cover || '';
+        const time   = item.time ? `<span class="calendar-time">🕒 ${escapeHtml(item.time)}</span>` : '';
+        const score  = item.score ? `<span class="calendar-score">★ ${item.score}</span>` : '';
+        const ep     = item.episode ? `<span class="calendar-ep">Ep. ${item.episode}</span>` : '';
+        const badges = item.kitsuId ? platformBadgesHtml(item.kitsuId) : '';
+        return `
+        <div class="calendar-card" role="button" tabindex="0" data-key="${item.key}"
+             onclick="openCalendarCard('${item.key}')"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCalendarCard('${item.key}');}">
+            <img class="calendar-card-img" src="${cover}" alt="" loading="lazy">
+            <div class="calendar-card-info">
+                <div class="calendar-card-title">${title}</div>
+                <div class="calendar-card-meta">${time}${score}${ep}</div>
+                ${badges ? `<div class="calendar-badges">${badges}</div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    /** Clique num card: abre o modal pelo id do Kitsu ou resolve-o pelo título */
+    async function openCalendarCard(key) {
+        const item = _calendarItems[key];
+        if (!item) return;
+        if (item.kitsuId) { openModal(item.kitsuId); return; }
+
+        const card = document.querySelector(`.calendar-card[data-key="${key}"]`);
+        if (card) card.classList.add('loading');
+        const id = await resolveKitsuId(item.titles);
+        if (card) card.classList.remove('loading');
+
+        if (!id) { showToast('Não foi possível encontrar este anime no catálogo.'); return; }
+
+        item.kitsuId = id;
+        const badgesHtml = platformBadgesHtml(id);
+        if (card && badgesHtml) {
+            const badgesEl = card.querySelector('.calendar-badges');
+            if (badgesEl) badgesEl.innerHTML = badgesHtml;
+            else card.querySelector('.calendar-card-info')
+                     ?.insertAdjacentHTML('beforeend', `<div class="calendar-badges">${badgesHtml}</div>`);
+        }
+        openModal(id);
     }
 
     function resetForm() {
@@ -3277,8 +4443,20 @@
     document.getElementById('statsModal').addEventListener('click', e => {
         if (e.target.id === 'statsModal') closeStatsModal();
     });
+    document.getElementById('trailerModal').addEventListener('click', e => {
+        if (e.target.id === 'trailerModal') closeTrailer();
+    });
+    document.getElementById('calendarModal').addEventListener('click', e => {
+        if (e.target.id === 'calendarModal') closeCalendar();
+    });
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { closeModal(); closeStatsModal(); closeThemeMenu(); }
+        if (e.key !== 'Escape') return;
+        // Fecha por camadas: trailer → detalhes → estatísticas → calendário → tema
+        if (document.getElementById('trailerModal').classList.contains('active')) { closeTrailer(); return; }
+        if (document.getElementById('animeModal').classList.contains('active'))   { closeModal();   return; }
+        if (document.getElementById('statsModal').classList.contains('active'))   { closeStatsModal(); return; }
+        if (document.getElementById('calendarModal').classList.contains('active')){ closeCalendar(); return; }
+        closeThemeMenu();
     });
     </script>
 </body>
