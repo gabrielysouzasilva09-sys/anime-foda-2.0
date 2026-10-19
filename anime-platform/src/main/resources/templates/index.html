@@ -45,26 +45,120 @@
            O tema "Roxo Dark" é o padrão (definido em :root).
            Cada tema abaixo sobrepõe as variáveis sem recarregar a página. */
         html[data-theme="cyberpunk"] {
-            --bg-primary:    #05060a;
-            --bg-secondary:  #0a0e1a;
-            --bg-card:       #0e1524;
-            --bg-card-hover: #141d31;
-            --accent:        #00e5ff;
-            --accent-hover:  #ff2bd6;
-            --accent-2:      #ff2bd6;
-            --accent-glow:   rgba(0, 229, 255, 0.4);
-            --accent-soft:   rgba(0, 229, 255, 0.1);
-            --on-accent:     #03070d;
-            --on-success:    #002018;
-            --text-primary:  #e8fbff;
-            --text-secondary:#7fb8cc;
-            --text-muted:    #557a8c;
-            --border:        #172a44;
-            --star:          #1b2c44;
-            --star-filled:   #ff2bd6;
+            --bg-primary:    #0d0221;
+            --bg-secondary:  #190535;
+            --bg-card:       #150a2a;
+            --bg-card-hover: #1f0d3c;
+            --accent:        #ff0055;
+            --accent-hover:  #ff2b76;
+            --accent-2:      #00f0ff;
+            --accent-glow:   rgba(255, 0, 85, 0.4);
+            --accent-soft:   rgba(255, 0, 85, 0.12);
+            --on-accent:     #ffffff;
+            --on-success:    #05121a;
+            --text-primary:  #00f0ff;
+            --text-secondary:#8aa0d6;
+            --text-muted:    #5a6795;
+            --border:        #ff0055;
+            --star:          #2a1150;
+            --star-filled:   #00f0ff;
             --success:       #00ffa3;
             --warning:       #ffd60a;
             --danger:        #ff2e63;
+        }
+
+        /* Tema "Dracula Vampírico" (preto, vinho e vermelho) */
+        html[data-theme="dracula"] {
+            --bg-primary:    #0a0407;
+            --bg-secondary:  #1a0812;
+            --bg-card:       #12050c;
+            --bg-card-hover: #1c0910;
+            --accent:        #d00000;
+            --accent-hover:  #ff1a1a;
+            --accent-2:      #600000;
+            --accent-glow:   rgba(208, 0, 0, 0.4);
+            --accent-soft:   rgba(208, 0, 0, 0.12);
+            --on-accent:     #ffffff;
+            --on-success:    #0a0407;
+            --text-primary:  #f1e6ea;
+            --text-secondary:#c9a3b0;
+            --text-muted:    #8a6470;
+            --border:        #600000;
+            --star:          #3a1520;
+            --star-filled:   #ffb703;
+            --success:       #22c55e;
+            --warning:       #eab308;
+            --danger:        #d00000;
+        }
+
+        /* Tema "Midnight Neon" */
+        html[data-theme="midnight"] {
+            --bg-primary:    #0b0c10;
+            --bg-secondary:  #1f2833;
+            --bg-card:       #12141d;
+            --bg-card-hover: #1b1e2b;
+            --accent:        #9d4edd;
+            --accent-hover:  #b06ef0;
+            --accent-2:      #e0aaff;
+            --accent-glow:   rgba(157, 78, 221, 0.4);
+            --accent-soft:   rgba(157, 78, 221, 0.12);
+            --on-accent:     #ffffff;
+            --on-success:    #0b0c10;
+            --text-primary:  #ffffff;
+            --text-secondary:#b8c1cc;
+            --text-muted:    #7a8798;
+            --border:        #7b2cbf;
+            --star:          #2a3140;
+            --star-filled:   #e0aaff;
+            --success:       #34d399;
+            --warning:       #fbbf24;
+            --danger:        #f87171;
+        }
+
+        html[data-theme="synthwave"] {
+            --bg-primary:    #1a0b2e;
+            --bg-secondary:  #2b1055;
+            --bg-card:       #240046;
+            --bg-card-hover: #33006b;
+            --accent:        #ff9d00;
+            --accent-hover:  #ffb340;
+            --accent-2:      #ff71ce;
+            --accent-glow:   rgba(255, 157, 0, 0.4);
+            --accent-soft:   rgba(255, 157, 0, 0.12);
+            --on-accent:     #1a0b2e;
+            --on-success:    #1a0b2e;
+            --text-primary:  #ff71ce;
+            --text-secondary:#c77dff;
+            --text-muted:    #9d6bb5;
+            --border:        #ff71ce;
+            --star:          #4b2a6b;
+            --star-filled:   #ffd60a;
+            --success:       #00e5a0;
+            --warning:       #ff9d00;
+            --danger:        #ff4d6d;
+        }
+
+        html[data-theme="matrix"] {
+            --bg-primary:    #051408;
+            --bg-secondary:  #0a2910;
+            --bg-card:       #071f0c;
+            --bg-card-hover: #0c2f13;
+            --accent:        #00ffcc;
+            --accent-hover:  #4dffe0;
+            --accent-2:      #00ff66;
+            --accent-glow:   rgba(0, 255, 204, 0.4);
+            --accent-soft:   rgba(0, 255, 204, 0.1);
+            --on-accent:     #03150f;
+            --on-success:    #03150f;
+            --text-primary:  #00ff66;
+            --text-secondary:#4ddb8a;
+            --text-muted:    #2f8a55;
+            --border:        #00ff66;
+            --star:          #14402a;
+            --star-filled:   #aaff00;
+            --success:       #00ff66;
+            --warning:       #d4ff00;
+            --danger:        #ff3b3b;
         }
 
         html[data-theme="minimal"] {
@@ -111,6 +205,30 @@
             --success:       #22c55e;
             --warning:       #eab308;
             --danger:        #ef4444;
+        }
+
+        html[data-theme="light"] {
+            color-scheme: light;
+            --bg-primary:    #f4f4f9;
+            --bg-secondary:  #ffffff;
+            --bg-card:       #ffffff;
+            --bg-card-hover: #f1f1f7;
+            --accent:        #6200ee;
+            --accent-hover:  #7c3aed;
+            --accent-2:      #a855f7;
+            --accent-glow:   rgba(98, 0, 238, 0.28);
+            --accent-soft:   rgba(98, 0, 238, 0.08);
+            --on-accent:     #ffffff;
+            --on-success:    #ffffff;
+            --text-primary:  #1a1a24;
+            --text-secondary:#52525b;
+            --text-muted:    #71717a;
+            --border:        #e0e0e0;
+            --star:          #d4d4d8;
+            --star-filled:   #f59e0b;
+            --success:       #16a34a;
+            --warning:       #d97706;
+            --danger:        #dc2626;
         }
 
         body {
@@ -287,6 +405,79 @@
             display: block;
         }
         .anime-card:hover .anime-card-image { transform: scale(1.05); }
+
+        /* Temas estilizados: contorno de destaque permanente + glow no hover */
+        html[data-theme="cyberpunk"] .anime-card,
+        html[data-theme="dracula"]   .anime-card,
+        html[data-theme="midnight"]  .anime-card,
+        html[data-theme="synthwave"] .anime-card,
+        html[data-theme="matrix"]    .anime-card {
+            border-color: var(--border);
+        }
+        html[data-theme="cyberpunk"] .anime-card:hover,
+        html[data-theme="dracula"]   .anime-card:hover,
+        html[data-theme="midnight"]  .anime-card:hover,
+        html[data-theme="synthwave"] .anime-card:hover,
+        html[data-theme="matrix"]    .anime-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--accent-glow), 0 0 15px var(--accent);
+        }
+        /* Dracula Vampírico: sombra própria + brilho sangrento no hover */
+        html[data-theme="dracula"] .anime-card {
+            box-shadow: 0 4px 15px rgba(96, 0, 0, 0.4);
+        }
+        html[data-theme="dracula"] .anime-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(208, 0, 0, 0.6);
+        }
+        /* Midnight Neon: sombra própria + glow lilás no hover */
+        html[data-theme="midnight"] .anime-card {
+            box-shadow: 0 4px 15px rgba(123, 44, 191, 0.2);
+        }
+        html[data-theme="midnight"] .anime-card:hover {
+            border-color: #e0aaff;
+            box-shadow: 0 0 15px rgba(224, 170, 255, 0.5);
+        }
+
+        /* --- EFEITO DE SANGUE ESCORRENDO NA ABA SUPERIOR (Dracula Vampírico) --- */
+        #blood-drip-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 35px;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeat-x left top;
+            /* SVG inline para desenhar as gotas de sangue */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40' preserveAspectRatio='none'%3E%3Cpath fill='%23900000' d='M0,0 L1200,0 L1200,8 C1150,8 1140,25 1130,25 C1120,25 1110,8 1060,8 C1020,8 1010,32 1000,32 C990,32 980,8 920,8 C880,8 870,20 860,20 C850,20 840,8 780,8 C740,8 730,38 720,38 C710,38 700,8 630,8 C590,8 580,18 570,18 C560,18 550,8 490,8 C450,8 440,30 430,30 C420,30 410,8 350,8 C310,8 300,22 290,22 C280,22 270,8 210,8 C170,8 160,35 150,35 C140,35 130,8 60,8 C30,8 20,15 10,15 C5,15 0,8 0,8 Z'/%3E%3C/svg%3E");
+            filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.8));
+        }
+        html[data-theme="dracula"] #blood-drip-container {
+            display: block;
+        }
+
+        /* --- MORCEGOS PRETOS VETORIZADOS (Dracula Vampírico) --- */
+        .black-bat {
+            position: fixed;
+            width: 32px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 9998;
+            background-repeat: no-repeat;
+            background-size: contain;
+            /* SVG de silhueta de morcego preta */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 16' fill='%23000000'%3E%3Cpath d='M12 2C10.5 0 8 1 8 3C8 4 6 3 4 4C2 5 1 8 0 10C3 10 5 9 7 11C9 13 10 16 12 16C14 16 15 13 17 11C19 9 21 10 24 10C23 8 22 5 20 4C18 3 16 4 16 3C16 1 13.5 0 12 2Z'/%3E%3C/svg%3E");
+            animation: flyBat 4s linear forwards;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.9));
+        }
+        @keyframes flyBat {
+            0%   { opacity: 0;    transform: translateY(0) scale(0.6) rotate(0deg); }
+            15%  { opacity: 1; }
+            85%  { opacity: 1; }
+            100% { opacity: 0;    transform: translateY(-100vh) scale(1.3) rotate(15deg); }
+        }
 
         .anime-card-score {
             position: absolute;
@@ -1776,6 +1967,9 @@
 </head>
 <body>
 
+    <!-- Efeito "sangue escorrendo" do tema Dracula Vampírico -->
+    <div id="blood-drip-container"></div>
+
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
@@ -1839,9 +2033,14 @@
                 </button>
                 <div class="theme-menu" id="themeMenu" role="menu" aria-labelledby="themeBtn">
                     <button class="theme-option" role="menuitem" data-theme="purple"    onclick="setTheme('purple')"    style="--sw1:#7c3aed;--sw2:#a855f7;"><span class="theme-swatch"></span>Roxo Dark</button>
-                    <button class="theme-option" role="menuitem" data-theme="cyberpunk" onclick="setTheme('cyberpunk')" style="--sw1:#00e5ff;--sw2:#ff2bd6;"><span class="theme-swatch"></span>Cyberpunk Neon</button>
+                    <button class="theme-option" role="menuitem" data-theme="cyberpunk" onclick="setTheme('cyberpunk')" style="--sw1:#0d0221;--sw2:#ff0055;"><span class="theme-swatch"></span>Cyberpunk Neon</button>
+                    <button class="theme-option" role="menuitem" data-theme="dracula"   onclick="setTheme('dracula')"   style="--sw1:#1a0812;--sw2:#d00000;"><span class="theme-swatch"></span>Dracula Vampírico</button>
+                    <button class="theme-option" role="menuitem" data-theme="midnight"  onclick="setTheme('midnight')"  style="--sw1:#1f2833;--sw2:#9d4edd;"><span class="theme-swatch"></span>Midnight Neon</button>
+                    <button class="theme-option" role="menuitem" data-theme="synthwave" onclick="setTheme('synthwave')" style="--sw1:#2b1055;--sw2:#ff9d00;"><span class="theme-swatch"></span>Synthwave Sunset</button>
+                    <button class="theme-option" role="menuitem" data-theme="matrix"    onclick="setTheme('matrix')"    style="--sw1:#0a2910;--sw2:#00ff66;"><span class="theme-swatch"></span>Emerald Matrix</button>
                     <button class="theme-option" role="menuitem" data-theme="minimal"   onclick="setTheme('minimal')"   style="--sw1:#d4d4d8;--sw2:#a1a1aa;"><span class="theme-swatch"></span>Minimalista Escuro</button>
                     <button class="theme-option" role="menuitem" data-theme="red"       onclick="setTheme('red')"       style="--sw1:#e11d2f;--sw2:#ff5c39;"><span class="theme-swatch"></span>Vermelho Anime</button>
+                    <button class="theme-option" role="menuitem" data-theme="light"     onclick="setTheme('light')"     style="--sw1:#f4f4f9;--sw2:#6200ee;"><span class="theme-swatch"></span>Claro</button>
                 </div>
             </div>
         </div>
@@ -2092,7 +2291,7 @@
     const LS_THEME      = 'anireview_theme';       // chave localStorage tema visual
     const LS_FAVORITES  = 'anireview_favorites';   // chave localStorage favoritos
     const LS_WATCHLIST  = 'anireview_watchlist';   // chave localStorage assistir mais tarde
-    const THEMES        = ['purple', 'cyberpunk', 'minimal', 'red'];
+    const THEMES        = ['purple', 'cyberpunk', 'dracula', 'midnight', 'synthwave', 'matrix', 'minimal', 'red', 'light'];
 
     /* ── Globais ── */
     let currentAnime        = null;
@@ -2266,12 +2465,36 @@
        Aplica o tema via atributo data-theme no <html>, atualiza
        as variáveis CSS instantaneamente e persiste no localStorage.
     ════════════════════════════════════════════════════════════ */
+    /* Morcegos do tema "Dracula Vampírico" — criados em JS porque o CSS
+       só define a aparência (.black-bat) e a animação (flyBat). */
+    let _batTimer = null;
+    function spawnBat() {
+        const bat = document.createElement('span');
+        bat.className  = 'black-bat';
+        const size = 22 + Math.random() * 18;
+        bat.style.left   = (Math.random() * 96) + 'vw';
+        bat.style.top    = (75 + Math.random() * 22) + 'vh';
+        bat.style.width  = size + 'px';
+        bat.style.height = (size * 0.62) + 'px';
+        document.body.appendChild(bat);
+        setTimeout(() => bat.remove(), 4200);   // remove no fim da animação
+    }
+    function setBats(enabled) {
+        if (_batTimer) { clearInterval(_batTimer); _batTimer = null; }
+        document.querySelectorAll('.black-bat').forEach(b => b.remove());
+        if (enabled) {
+            spawnBat();
+            _batTimer = setInterval(spawnBat, 1500);
+        }
+    }
+
     function applyTheme(theme) {
         if (!THEMES.includes(theme)) theme = 'purple';
         document.documentElement.setAttribute('data-theme', theme);
         document.querySelectorAll('.theme-option').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === theme);
         });
+        setBats(theme === 'dracula');   // morcegos só no Dracula Vampírico
     }
     function setTheme(theme) {
         lsSet(LS_THEME, theme);   // persiste a preferência
