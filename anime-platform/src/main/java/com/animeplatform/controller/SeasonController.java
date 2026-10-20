@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
  * usando o kitsuId extraído do seasonId.
  */
 @RestController
-@CrossOrigin(origins = "*")
 public class SeasonController {
 
     // ══════════════════════════════════════════════════════════════════════════

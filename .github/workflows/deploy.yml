@@ -1,0 +1,59 @@
+name: Deploy
+
+# Dispara sempre que ha um push na main.
+# Nota: fazer merge de um Pull Request para a main gera ele proprio um push
+# na main, por isso este unico gatilho cobre os dois casos ("push ou merge")
+# sem provocar deploys duplicados.
+on:
+  push:
+    branches: [ main ]
+  # Permite correr manualmente a partir do separador "Actions"
+  workflow_dispatch:
+
+# Garante que nunca ha dois deploys em simultaneo.
+# cancel-in-progress: false para nao interromper um deploy ja a decorrer.
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+# O projeto Maven vive na subpasta anime-platform/ (a raiz do repo e a pasta mae).
+defaults:
+  run:
+    working-directory: anime-platform
+
+jobs:
+  build:
+    name: Build (Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compilar e empacotar
+        run: mvn -B clean package
+
+  deploy:
+    name: Deploy (Render)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acionar o Deploy Hook do Render
+        env:
+          # Segredo a definir em:
+          # Settings > Secrets and variables > Actions > New repository secret
+          # Valor = Deploy Hook URL do servico no Render (Settings > Deploy Hook)
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "::warning::Secret RENDER_DEPLOY_HOOK nao definido - deploy ignorado (build OK)."
+            exit 0
+          fi
+          echo "A acionar o deploy no Render..."
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK"

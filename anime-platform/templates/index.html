@@ -9,24 +9,24 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg-primary:    #0d0d0f;
-            --bg-secondary:  #16161a;
-            --bg-card:       #1f1f26;
-            --bg-card-hover: #252530;
-            --accent:        #7c3aed;
-            --accent-hover:  #8b5cf6;
-            --accent-glow:   rgba(124, 58, 237, 0.35);
-            --text-primary:  #f4f4f5;
+            --bg-primary:    #0f0f15;
+            --bg-secondary:  #1a1a24;
+            --bg-card:       #151520;
+            --bg-card-hover: #1d1d2c;
+            --accent:        #7257fa;
+            --accent-hover:  #8b74ff;
+            --accent-glow:   rgba(114, 87, 250, 0.35);
+            --text-primary:  #ffffff;
             --text-secondary:#a1a1aa;
             --text-muted:    #71717a;
-            --border:        #27272a;
+            --border:        rgba(114, 87, 250, 0.2);
             --star:          #3f3f46;
             --star-filled:   #fbbf24;
             --success:       #22c55e;
             --warning:       #eab308;
             --danger:        #ef4444;
             --accent-2:      #a855f7;                       /* 2º tom de destaque (gradientes) */
-            --accent-soft:   rgba(124, 58, 237, 0.1);        /* tinta suave de destaque (hovers/fundos) */
+            --accent-soft:   rgba(114, 87, 250, 0.1);        /* tinta suave de destaque (hovers/fundos) */
             --on-accent:     #ffffff;                        /* texto sobre o destaque */
             --on-success:    #ffffff;                        /* texto sobre o sucesso */
             /* Marcas das plataformas de streaming — iguais em todos os temas */
@@ -91,25 +91,25 @@
             --danger:        #d00000;
         }
 
-        /* Tema "Midnight Neon" */
+        /* Tema "Midnight Neon" (azul noturno profundo com azul neon) */
         html[data-theme="midnight"] {
-            --bg-primary:    #0b0c10;
-            --bg-secondary:  #1f2833;
-            --bg-card:       #12141d;
-            --bg-card-hover: #1b1e2b;
-            --accent:        #9d4edd;
-            --accent-hover:  #b06ef0;
-            --accent-2:      #e0aaff;
-            --accent-glow:   rgba(157, 78, 221, 0.4);
-            --accent-soft:   rgba(157, 78, 221, 0.12);
-            --on-accent:     #ffffff;
-            --on-success:    #0b0c10;
-            --text-primary:  #ffffff;
-            --text-secondary:#b8c1cc;
-            --text-muted:    #7a8798;
-            --border:        #7b2cbf;
-            --star:          #2a3140;
-            --star-filled:   #e0aaff;
+            --bg-primary:    #050b14;
+            --bg-secondary:  #0a192f;
+            --bg-card:       #0d223a;
+            --bg-card-hover: #123152;
+            --accent:        #00d2ff;
+            --accent-hover:  #4fdcff;
+            --accent-2:      #0066ff;
+            --accent-glow:   rgba(0, 210, 255, 0.4);
+            --accent-soft:   rgba(0, 210, 255, 0.12);
+            --on-accent:     #04121f;
+            --on-success:    #050b14;
+            --text-primary:  #e6f1ff;
+            --text-secondary:#9fb8d4;
+            --text-muted:    #6b86a6;
+            --border:        #00d2ff;
+            --star:          #14324f;
+            --star-filled:   #00d2ff;
             --success:       #34d399;
             --warning:       #fbbf24;
             --danger:        #f87171;
@@ -430,13 +430,13 @@
             border-color: var(--accent);
             box-shadow: 0 0 20px rgba(208, 0, 0, 0.6);
         }
-        /* Midnight Neon: sombra própria + glow lilás no hover */
+        /* Midnight Neon: sombra própria + glow ciano no hover */
         html[data-theme="midnight"] .anime-card {
-            box-shadow: 0 4px 15px rgba(123, 44, 191, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
         }
         html[data-theme="midnight"] .anime-card:hover {
-            border-color: #e0aaff;
-            box-shadow: 0 0 15px rgba(224, 170, 255, 0.5);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
 
         /* --- EFEITO DE SANGUE ESCORRENDO NA ABA SUPERIOR (Dracula Vampírico) --- */
@@ -900,111 +900,57 @@
         /* ===== Painel Episódios ===== */
         .episodes-panel { padding: 1.5rem; }
 
-        /* Dropdown de temporada */
+        /* Seletor de temporada (select nativo) */
         .seasons-bar {
             margin-bottom: 1.25rem;
             position: relative;
         }
 
-        .season-btn {
+        #season-select {
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            padding: 0.7rem 1rem;
+            padding: 0.7rem 2.6rem 0.7rem 1rem;
             border-radius: 12px;
             border: 1px solid var(--border);
-            background: var(--bg-card);
+            background-color: var(--bg-card);
             color: var(--text-primary);
+            font-family: inherit;
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            text-align: left;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            user-select: none;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a99' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
         }
-        .season-btn:hover {
+        #season-select:hover {
             border-color: var(--accent);
-            background: var(--bg-card-hover);
+            background-color: var(--bg-card-hover);
         }
-        .season-btn.open {
+        #season-select:focus {
+            outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px var(--accent-glow);
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
         }
-
-        .season-btn-arrow {
-            flex-shrink: 0;
-            width: 18px;
-            height: 18px;
-            color: var(--text-muted);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .season-btn.open .season-btn-arrow {
-            transform: rotate(180deg);
-            color: var(--accent);
-        }
-
-        .season-btn-label {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .season-dropdown {
-            position: absolute;
-            top: calc(100% - 1px);
-            left: 0;
-            right: 0;
-            background: var(--bg-card);
-            border: 1px solid var(--accent);
-            border-top: none;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            overflow: hidden;
-            z-index: 200;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-            transform-origin: top center;
-            animation: dropdownOpen 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes dropdownOpen {
-            from { opacity: 0; transform: scaleY(0.88); }
-            to   { opacity: 1; transform: scaleY(1); }
-        }
-
-        .season-option {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.7rem 1rem;
-            font-size: 0.88rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s;
-            border-bottom: 1px solid var(--border);
-        }
-        .season-option:last-child { border-bottom: none; }
-        .season-option:hover {
-            background: var(--bg-card-hover);
+        #season-select option {
+            background: var(--bg-secondary);
             color: var(--text-primary);
         }
-        .season-option.active {
-            color: var(--accent);
-            font-weight: 700;
-            background: var(--accent-soft);
+
+        /* Dracula Vampírico: seletor e opções em tons de vinho */
+        html[data-theme="dracula"] select,
+        html[data-theme="dracula"] select option {
+            background-color: #12050c;  /* fundo vinho escuro do card */
+            color: #f1e6ea;             /* texto claro gótico */
+            border-color: #600000;      /* borda vinho */
         }
-        .season-option.active::after {
-            content: '✓';
-            margin-left: auto;
-            font-size: 0.85rem;
-            color: var(--accent);
+        /* Fundo ao passar o rato / opção selecionada */
+        html[data-theme="dracula"] select option:hover,
+        html[data-theme="dracula"] select option:checked {
+            background-color: #600000 !important;
+            color: #ffffff !important;
         }
 
         /* Lista de episódios */
@@ -2032,10 +1978,10 @@
                     <span class="stats-btn-label">Tema</span>
                 </button>
                 <div class="theme-menu" id="themeMenu" role="menu" aria-labelledby="themeBtn">
-                    <button class="theme-option" role="menuitem" data-theme="purple"    onclick="setTheme('purple')"    style="--sw1:#7c3aed;--sw2:#a855f7;"><span class="theme-swatch"></span>Roxo Dark</button>
+                    <button class="theme-option" role="menuitem" data-theme="purple"    onclick="setTheme('purple')"    style="--sw1:#7257fa;--sw2:#a855f7;"><span class="theme-swatch"></span>Roxo Dark</button>
                     <button class="theme-option" role="menuitem" data-theme="cyberpunk" onclick="setTheme('cyberpunk')" style="--sw1:#0d0221;--sw2:#ff0055;"><span class="theme-swatch"></span>Cyberpunk Neon</button>
                     <button class="theme-option" role="menuitem" data-theme="dracula"   onclick="setTheme('dracula')"   style="--sw1:#1a0812;--sw2:#d00000;"><span class="theme-swatch"></span>Dracula Vampírico</button>
-                    <button class="theme-option" role="menuitem" data-theme="midnight"  onclick="setTheme('midnight')"  style="--sw1:#1f2833;--sw2:#9d4edd;"><span class="theme-swatch"></span>Midnight Neon</button>
+                    <button class="theme-option" role="menuitem" data-theme="midnight"  onclick="setTheme('midnight')"  style="--sw1:#0a192f;--sw2:#00d2ff;"><span class="theme-swatch"></span>Midnight Neon</button>
                     <button class="theme-option" role="menuitem" data-theme="synthwave" onclick="setTheme('synthwave')" style="--sw1:#2b1055;--sw2:#ff9d00;"><span class="theme-swatch"></span>Synthwave Sunset</button>
                     <button class="theme-option" role="menuitem" data-theme="matrix"    onclick="setTheme('matrix')"    style="--sw1:#0a2910;--sw2:#00ff66;"><span class="theme-swatch"></span>Emerald Matrix</button>
                     <button class="theme-option" role="menuitem" data-theme="minimal"   onclick="setTheme('minimal')"   style="--sw1:#d4d4d8;--sw2:#a1a1aa;"><span class="theme-swatch"></span>Minimalista Escuro</button>
@@ -3479,12 +3425,10 @@
                 // Actualiza o meta (o total de episódios será atribuído quando os eps carregarem)
                 updateModalMeta();
 
-                // Se a tab de episódios já estiver aberta, reconstrói o dropdown
+                // Se a tab de episódios já estiver aberta, reconstrói o seletor
                 const panelEp = document.getElementById('panelEpisodes');
                 if (panelEp && panelEp.style.display !== 'none') {
                     document.getElementById('seasonsBar').innerHTML = '';
-                    const oldBtn = document.getElementById('seasonDropdownBtn');
-                    if (oldBtn) oldBtn.remove();
                     initSeasonSelect();
                 }
             });
@@ -3497,7 +3441,6 @@
 
     function closeModal() {
         closeTrailer();   // garante que o trailer (e o seu áudio) para ao fechar o anime
-        closeSeasonDropdown();
         document.getElementById('animeModal').classList.remove('active');
         currentAnime = null;
         // Cancela recomendações em curso e esconde a secção
@@ -3989,7 +3932,7 @@
         document.getElementById('tabReview').classList.toggle('active',  !isEp);
         document.getElementById('tabEpisodes').classList.toggle('active', isEp);
 
-        if (isEp && currentAnime && !document.getElementById('seasonDropdownBtn')) {
+        if (isEp && currentAnime && !document.getElementById('season-select')) {
             initSeasonSelect();
         }
     }
@@ -4052,100 +3995,31 @@
     }
 
     /**
-     * Constrói o dropdown personalizado de temporadas com seta ▼/▲.
-     * activeIdx: índice numérico da opção pré-seleccionada (0-based).
+     * Constrói o seletor nativo de temporadas (<select id="season-select">).
+     * activeIdx: índice numérico da opção pré-selecionada (0-based).
      * onSelect(season): callback recebe o objecto season completo {label, kitsuId, epStart?, epEnd?, subtype?}
      */
     function buildSeasonDropdown(container, seasons, activeIdx, onSelect) {
-        const idx0    = typeof activeIdx === 'number' ? activeIdx : 0;
-        const active  = seasons[idx0] || seasons[0];
-        const activeLabel = active ? (active.label || 'Temporada') : 'Temporadas';
-        const activeIcon  = active ? subtypeIcon(active.subtype) : '📺';
+        const idx0 = typeof activeIdx === 'number' ? activeIdx : 0;
 
-        const btn = document.createElement('button');
-        btn.type      = 'button';
-        btn.className = 'season-btn';
-        btn.id        = 'seasonDropdownBtn';
-        btn.setAttribute('aria-haspopup', 'listbox');
-        btn.setAttribute('aria-expanded', 'false');
-        btn.innerHTML = `
-            <span class="season-btn-label">${activeIcon} ${escapeHtml(activeLabel)}</span>
-            <span class="season-btn-arrow" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"/>
-                </svg>
-            </span>`;
+        const select = document.createElement('select');
+        select.id = 'season-select';
+        select.setAttribute('aria-label', 'Selecionar temporada');
 
-        function closeDropdown() {
-            const existing = document.getElementById('seasonDropdownList');
-            if (existing) existing.remove();
-            btn.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-            // Sincroniza label do botão com a opção activa
-            const cur = container.querySelector('.season-option.active');
-            if (cur) {
-                const lbl = btn.querySelector('.season-btn-label');
-                if (lbl) lbl.textContent = cur.textContent.trim();
-            }
-        }
+        seasons.forEach((s, i) => {
+            const opt = document.createElement('option');
+            opt.value = String(i);
+            opt.textContent = `${subtypeIcon(s.subtype)} ${s.label || 'Temporada'}`;
+            if (i === idx0) opt.selected = true;
+            select.appendChild(opt);
+        });
 
-        function openDropdown() {
-            if (document.getElementById('seasonDropdownList')) { closeDropdown(); return; }
+        select.addEventListener('change', () => {
+            const s = seasons[Number(select.value)];
+            if (s) onSelect(s);  // passa o objecto season completo
+        });
 
-            btn.classList.add('open');
-            btn.setAttribute('aria-expanded', 'true');
-
-            const list = document.createElement('ul');
-            list.className = 'season-dropdown';
-            list.id        = 'seasonDropdownList';
-            list.setAttribute('role', 'listbox');
-
-            seasons.forEach((s, i) => {
-                const label = s.label || 'Temporada';
-                const icon  = subtypeIcon(s.subtype);
-                const li    = document.createElement('li');
-                li.className = `season-option${i === idx0 ? ' active' : ''}`;
-                li.setAttribute('role', 'option');
-                li.setAttribute('aria-selected', i === idx0 ? 'true' : 'false');
-                li.setAttribute('data-idx', i);
-                li.textContent = `${icon} ${label}`;
-
-                li.addEventListener('click', () => {
-                    btn.querySelector('.season-btn-label').textContent = `${icon} ${label}`;
-                    list.querySelectorAll('.season-option').forEach(el => {
-                        el.classList.remove('active');
-                        el.setAttribute('aria-selected', 'false');
-                    });
-                    li.classList.add('active');
-                    li.setAttribute('aria-selected', 'true');
-                    closeDropdown();
-                    onSelect(s);  // passa o objecto season completo
-                });
-                list.appendChild(li);
-            });
-
-            container.appendChild(list);
-
-            setTimeout(() => {
-                document.addEventListener('click', function handler(e) {
-                    if (!container.contains(e.target)) {
-                        closeDropdown();
-                        document.removeEventListener('click', handler);
-                    }
-                });
-            }, 0);
-        }
-
-        btn.addEventListener('click', e => { e.stopPropagation(); openDropdown(); });
-        container.appendChild(btn);
-    }
-
-    function closeSeasonDropdown() {
-        const drop = document.getElementById('seasonDropdownList');
-        if (drop) drop.remove();
-        const btn = document.getElementById('seasonDropdownBtn');
-        if (btn) { btn.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+        container.appendChild(select);
     }
 
     /* ════════════════════════════════════════════════════════════
@@ -4332,9 +4206,9 @@
         renderReviewsFeed();
     }
 
-    function renderReviewsFeed() {
+    function renderReviewsFeed(reviewsFromServer) {
         const feed    = document.getElementById('reviewsFeed');
-        const reviews = getReviews();
+        const reviews = Array.isArray(reviewsFromServer) ? reviewsFromServer : getReviews();
         const likes   = getLikes();
 
         if (!reviews.length) {
@@ -4682,5 +4556,6 @@
         closeThemeMenu();
     });
     </script>
+    <script src="script.js"></script>
 </body>
 </html>

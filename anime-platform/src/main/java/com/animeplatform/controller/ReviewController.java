@@ -1,26 +1,46 @@
 package com.animeplatform.controller;
 
 import com.animeplatform.model.Review;
+import com.animeplatform.model.User;
 import com.animeplatform.repository.ReviewRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.animeplatform.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller de resenhas/comentários.
+ *
+ * O autor é sempre derivado do token JWT (utilizador autenticado) —
+ * o corpo do pedido NUNCA decide quem escreveu a resenha, o que impede
+ * que um utilizador comente em nome de outro.
+ */
 @RestController
-@CrossOrigin(origins = "*")
 public class ReviewController {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+    private final AuthService authService;
+
+    public ReviewController(ReviewRepository reviewRepository, AuthService authService) {
+        this.reviewRepository = reviewRepository;
+        this.authService = authService;
+    }
 
     // ── GET /api/reviews ──────────────────────────────────────────────────────
+    /**
+     * Lista as resenhas guardadas no servidor.
+     * Se for passado ?animeId=..., devolve apenas as resenhas desse anime.
+     */
     @GetMapping("/api/reviews")
-    public ResponseEntity<?> getReviews() {
+    public ResponseEntity<?> getReviews(@RequestParam(required = false) String animeId) {
         try {
-            List<Review> reviews = reviewRepository.findAllOrderByCreatedAtDesc();
+            List<Review> reviews = (animeId != null && !animeId.isBlank())
+                    ? reviewRepository.findByAnimeIdOrderByCreatedAtDesc(animeId)
+                    : reviewRepository.findAllByOrderByCreatedAtDesc();
             return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,21 +51,12 @@ public class ReviewController {
 
     // ── POST /api/reviews ─────────────────────────────────────────────────────
     /**
-     * O Jackson deserializa o JSON directamente para Review.
-     * @JsonAlias na model garante compatibilidade com os nomes legados
-     * enviados pelo frontend (username, review, hasSpoiler).
+     * Cria uma resenha. Requer token JWT válido.
+     * O campo userName do corpo é ignorado — o autor vem do token.
      */
     @PostMapping("/api/reviews")
-    public ResponseEntity<?> addReview(@RequestBody Review incoming) {
+    public ResponseEntity<?> addReview(@RequestBody Review incoming, Authentication authentication) {
         try {
-            System.out.println("[ReviewController] POST /api/reviews recebido");
-            System.out.println("  animeId       = " + incoming.getAnimeId());
-            System.out.println("  animeTitle    = " + incoming.getAnimeTitle());
-            System.out.println("  userName      = " + incoming.getUserName());
-            System.out.println("  rating        = " + incoming.getRating());
-            System.out.println("  comment       = " + incoming.getComment());
-            System.out.println("  containsSpoiler = " + incoming.isContainsSpoiler());
-
             // Validações mínimas
             if (incoming.getRating() < 1 || incoming.getRating() > 10) {
                 return ResponseEntity.badRequest()
@@ -56,10 +67,16 @@ public class ReviewController {
                         .body(Map.of("error", "Campo 'comment' (ou 'review') é obrigatório"));
             }
 
+            // Autor derivado do token — impossível falsificar
+            User author = authService.findByUsername(authentication.getName());
+
+            incoming.setId(null);          // forçado a gerar novo id
+            incoming.setCreatedAt(null);   // data definida no servidor
+            incoming.setLikes(0);          // sem likes iniciais
+            incoming.setAuthor(author);
+            incoming.setUserName(author.getUsername());
+
             // Valores padrão para campos opcionais
-            if (incoming.getUserName() == null || incoming.getUserName().trim().isEmpty()) {
-                incoming.setUserName("Anônimo");
-            }
             if (incoming.getAnimeTitle() == null) {
                 incoming.setAnimeTitle("Sem título");
             }
@@ -68,8 +85,7 @@ public class ReviewController {
             }
 
             Review saved = reviewRepository.save(incoming);
-            System.out.println("[ReviewController] Resenha salva — ID: " + saved.getId());
-            return ResponseEntity.status(201).body(saved);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,14 +98,13 @@ public class ReviewController {
     @PostMapping("/api/reviews/{id}/like")
     public ResponseEntity<?> likeReview(@PathVariable String id) {
         try {
-            boolean success = reviewRepository.likeById(id);
-            if (success) {
-                int likes = reviewRepository.findById(id)
-                        .map(Review::getLikes)
-                        .orElse(0);
-                return ResponseEntity.ok(Map.of("likes", likes));
+            Review review = reviewRepository.findById(id).orElse(null);
+            if (review == null) {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.notFound().build();
+            review.setLikes(review.getLikes() + 1);
+            reviewRepository.save(review);
+            return ResponseEntity.ok(Map.of("likes", review.getLikes()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500)

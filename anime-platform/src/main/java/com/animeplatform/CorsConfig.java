@@ -3,52 +3,43 @@ package com.animeplatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
- * Configuração global de CORS.
+ * Configuração de CORS para o front-end local.
  *
- * Permite que qualquer origem (incluindo o browser quando o HTML é aberto
- * directamente via file:// ou via outro porto) consiga chamar a API.
+ * Permitido:
+ *  - http://localhost:<porta>   (ex: dev servers, 5500, 3000...)
+ *  - http://127.0.0.1:<porta>
+ *  - Origin "null"             (páginas abertas via file://)
  *
- * Cobre:
- *  - Preflight OPTIONS enviado pelo browser para POST com Content-Type: application/json
- *  - GET e POST nas rotas /api/**
- *  - Headers personalizados (Content-Type, Authorization)
+ * O CorsConfigurationSource é consumido pelo SecurityFilterChain em SecurityConfig,
+ * garantindo que o preflight OPTIONS é respondido antes da cadeia de autenticação.
  */
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class CorsConfig {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOriginPatterns("*")   // aceita qualquer origem, incluindo file://
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
-                .allowedHeaders("*")
-                .exposedHeaders("Content-Type", "Authorization")
-                .allowCredentials(false)
-                .maxAge(3600);
-    }
+    private static final List<String> ALLOWED_ORIGIN_PATTERNS = List.of(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "null"
+    );
 
-    /**
-     * CorsFilter garante que o preflight OPTIONS é respondido ANTES
-     * de qualquer outro filtro (ex: Spring Security, se vier a ser adicionado).
-     */
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(false);
-        config.addAllowedOriginPattern("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addExposedHeader("Content-Type");
+        config.setAllowedOriginPatterns(ALLOWED_ORIGIN_PATTERNS);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
-
-        return new CorsFilter(source);
+        return source;
     }
 }

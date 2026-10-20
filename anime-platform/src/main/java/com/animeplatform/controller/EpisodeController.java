@@ -6,6 +6,8 @@ import com.animeplatform.model.Episodio;
 import com.animeplatform.repository.EpisodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,9 +19,11 @@ import java.util.stream.Collectors;
  *
  * GET  /api/animes/{animeId}/episodes  — lista episódios com notas
  * POST /api/episodes/review            — guarda/actualiza nota de um episódio
+ *
+ * O autor da avaliação é derivado do token JWT (utilizador autenticado),
+ * nunca do corpo do pedido.
  */
 @RestController
-@CrossOrigin(origins = "*")
 public class EpisodeController {
 
     @Autowired
@@ -49,17 +53,21 @@ public class EpisodeController {
     @GetMapping("/api/animes/{animeId}/episodes")
     public ResponseEntity<?> getEpisodesByAnime(
             @PathVariable String animeId,
-            @RequestParam(required = false) String userName) {
+            @RequestParam(required = false) String userName,
+            Authentication authentication) {
         try {
+            // Se houver token JWT válido, o utilizador autenticado tem prioridade
+            final String effectiveUser = resolveUserName(authentication, userName);
+
             System.out.println("[EpisodeController] GET /api/animes/" + animeId + "/episodes"
-                    + (userName != null ? "?userName=" + userName : ""));
+                    + (effectiveUser != null ? "?userName=" + effectiveUser : ""));
 
             List<Episodio> episodios = episodeRepository.findByAnimeId(animeId);
 
-            // Converte para DTOs, preenchendo notaUsuario se userName fornecido
+            // Converte para DTOs, preenchendo notaUsuario se houver utilizador
             List<EpisodioDTO> dtos = episodios.stream()
-                    .map(ep -> userName != null
-                            ? new EpisodioDTO(ep, userName)
+                    .map(ep -> effectiveUser != null
+                            ? new EpisodioDTO(ep, effectiveUser)
                             : new EpisodioDTO(ep))
                     .collect(Collectors.toList());
 
@@ -92,12 +100,16 @@ public class EpisodeController {
      * Resposta 500: erro interno com mensagem
      */
     @PostMapping("/api/episodes/review")
-    public ResponseEntity<?> reviewEpisode(@RequestBody AvaliacaoDTO avaliacao) {
+    public ResponseEntity<?> reviewEpisode(@RequestBody AvaliacaoDTO avaliacao,
+                                           Authentication authentication) {
         try {
+            // Autor derivado do token JWT — o userName do corpo é ignorado
+            String userName = authentication.getName();
+
             System.out.println("[EpisodeController] POST /api/episodes/review");
             System.out.println("  episodioId = " + avaliacao.getEpisodioId());
             System.out.println("  animeId    = " + avaliacao.getAnimeId());
-            System.out.println("  userName   = " + avaliacao.getUserName());
+            System.out.println("  userName   = " + userName + " (do token)");
             System.out.println("  nota       = " + avaliacao.getNota());
 
             // Validação via método do DTO
@@ -114,12 +126,12 @@ public class EpisodeController {
             Episodio updated = episodeRepository.saveOrUpdateNota(
                     avaliacao.getAnimeId(),
                     avaliacao.getEpisodioId(),
-                    avaliacao.getUserName(),
+                    userName,
                     avaliacao.getNotaInt()
             );
 
             // Devolve o DTO com notaUsuario preenchida
-            EpisodioDTO dto = new EpisodioDTO(updated, avaliacao.getUserName());
+            EpisodioDTO dto = new EpisodioDTO(updated, userName);
 
             System.out.println("[EpisodeController] OK — notaMedia=" + dto.getNotaMedia()
                     + " totalNotas=" + dto.getTotalNotas()
@@ -132,5 +144,18 @@ public class EpisodeController {
             return ResponseEntity.status(500)
                     .body(Map.of("error", "Erro interno ao guardar nota: " + e.getMessage()));
         }
+    }
+
+    /**
+     * Decide qual o nome de utilizador a usar na leitura:
+     * o utilizador autenticado (token JWT) tem prioridade sobre o parâmetro de query.
+     */
+    private String resolveUserName(Authentication authentication, String userName) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return authentication.getName();
+        }
+        return (userName != null && !userName.isBlank()) ? userName : null;
     }
 }

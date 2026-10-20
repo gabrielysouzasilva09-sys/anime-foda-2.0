@@ -1,6 +1,7 @@
 package com.animeplatform.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,35 +9,49 @@ import java.util.List;
  * Representa um episódio de um anime.
  *
  * Os dados base (numero, titulo, sinopse) vêm da Kitsu API
- * e são guardados localmente no episodes.json para enriquecimento
- * com as notas dos utilizadores.
+ * e ficam persistidos no PostgreSQL, enriquecidos com as notas
+ * dos utilizadores (tabela episode_ratings).
  */
+@Entity
+@Table(name = "episodes")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Episodio {
 
     /** ID composto: "{animeId}-{numero}" — ex: "1-1", "42-3" */
+    @Id
+    @Column(name = "id", length = 64)
     private String id;
 
     /** ID do anime na Kitsu (String, ex: "1", "42") */
+    @Column(name = "anime_id", nullable = false, length = 64)
     private String animeId;
 
     /** ID da temporada a que pertence este episódio (ex: "1-s1"). Null se sem temporada. */
+    @Column(name = "season_id", length = 64)
     private String seasonId;
 
+    @Column(name = "numero")
     private int numero;
+
+    @Column(name = "titulo")
     private String titulo;
+
+    @Column(name = "sinopse", length = 2000)
     private String sinopse;
 
     /** Média das notas dos utilizadores (0.0 se sem notas) */
+    @Column(name = "nota_media")
     private double notaMedia;
 
     /** Total de avaliações recebidas */
+    @Column(name = "total_notas")
     private int totalNotas;
 
     /** Lista de notas individuais deste episódio */
+    @OneToMany(mappedBy = "episodio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<NotaEpisodio> notas = new ArrayList<>();
 
-    // ── Construtor padrão obrigatório para o Jackson ──
+    // ── Construtor padrão obrigatório para o JPA/Jackson ──
     public Episodio() {}
 
     public Episodio(String animeId, int numero, String titulo, String sinopse) {
