@@ -2,6 +2,9 @@
 # AniReview — imagem Docker para Spring Boot (Java 17)
 # Build multi-etapa: compila com Maven/JDK 17 e gera uma imagem final leve
 # apenas com o JRE e o JAR executavel, pronta a correr no Render.
+#
+# Este Dockerfile esta na RAIZ do repositorio; o projeto Maven vive na
+# subpasta anime-platform/, por isso os caminhos de copia sao relativos a ela.
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ── Etapa 1: build ─────────────────────────────────────────────────────────
@@ -10,11 +13,11 @@ WORKDIR /app
 
 # Copiar primeiro apenas o pom.xml para aproveitar a cache de camadas do
 # Docker: as dependencias so sao descarregadas de novo se o pom.xml mudar.
-COPY pom.xml .
+COPY anime-platform/pom.xml .
 RUN mvn -B dependency:go-offline
 
 # Copiar o codigo fonte e empacotar o JAR executavel do Spring Boot.
-COPY src ./src
+COPY anime-platform/src ./src
 RUN mvn -B clean package -DskipTests
 
 # ── Etapa 2: runtime ───────────────────────────────────────────────────────
