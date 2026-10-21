@@ -9,26 +9,50 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
+            color-scheme: dark;
+            /* ── Superfícies (camadas) ───────────────────────────────────
+               surface-0 = fundo da página · surface-1 = cartões/inputs
+               surface-2 = barras e cabeçalhos                        ── */
             --bg-primary:    #0f0f15;
             --bg-secondary:  #1a1a24;
             --bg-card:       #151520;
             --bg-card-hover: #1d1d2c;
-            --accent:        #7257fa;
+            /* ── Marca e interação ───────────────────────────────────── */
+            --accent:        #7257fa;                        /* preenchimento (botões/tabs) */
             --accent-hover:  #8b74ff;
+            --accent-text:   #b7a4ff;                        /* destaque para TEXTO/ícones (AA) */
             --accent-glow:   rgba(114, 87, 250, 0.35);
             --text-primary:  #ffffff;
             --text-secondary:#a1a1aa;
-            --text-muted:    #71717a;
-            --border:        rgba(114, 87, 250, 0.2);
+            --text-muted:    #8e8e98;                        /* AA ≥ 4.5:1 em surfaces 0/1 */
+            --border:        rgba(114, 87, 250, 0.22);       /* divisórias subtis */
+            --border-strong: #6d6d7a;                        /* contorno de controlos (≥ 3:1) */
             --star:          #3f3f46;
             --star-filled:   #fbbf24;
             --success:       #22c55e;
             --warning:       #eab308;
             --danger:        #ef4444;
-            --accent-2:      #a855f7;                       /* 2º tom de destaque (gradientes) */
+            --accent-2:      #a855f7;                        /* 2º tom de destaque (gradientes) */
             --accent-soft:   rgba(114, 87, 250, 0.1);        /* tinta suave de destaque (hovers/fundos) */
             --on-accent:     #ffffff;                        /* texto sobre o destaque */
             --on-success:    #ffffff;                        /* texto sobre o sucesso */
+            /* ── Foco acessível (WCAG 2.4.11 / 2.4.13) ───────────────── */
+            --focus-ring:      #b7a4ff;
+            --focus-ring-halo: rgba(183, 164, 255, 0.45);
+            /* ── Semântica em camadas (aliases) ──────────────────────── */
+            --surface-0: var(--bg-primary);
+            --surface-1: var(--bg-card);
+            --surface-2: var(--bg-secondary);
+            --text-1: var(--text-primary);
+            --text-2: var(--text-secondary);
+            --text-3: var(--text-muted);
+            /* ── Métricas de design ──────────────────────────────────── */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --target-min: 44px;                              /* alvo de toque mínimo (WCAG 2.5.8) */
+            --content-max: 1400px;
+            --reading-max: 68ch;                             /* comprimento de linha para leitura */
             /* Marcas das plataformas de streaming — iguais em todos os temas */
             --netflix:       #e50914;
             --netflix-glow:  rgba(229, 9, 20, 0.45);
@@ -51,20 +75,24 @@
             --bg-card-hover: #1f0d3c;
             --accent:        #ff0055;
             --accent-hover:  #ff2b76;
+            --accent-text:   #ff6b95;
             --accent-2:      #00f0ff;
             --accent-glow:   rgba(255, 0, 85, 0.4);
             --accent-soft:   rgba(255, 0, 85, 0.12);
-            --on-accent:     #ffffff;
+            --on-accent:     #0d0221;
             --on-success:    #05121a;
             --text-primary:  #00f0ff;
             --text-secondary:#8aa0d6;
-            --text-muted:    #5a6795;
+            --text-muted:    #7d8cba;
             --border:        #ff0055;
+            --border-strong: #ff2b76;
             --star:          #2a1150;
             --star-filled:   #00f0ff;
             --success:       #00ffa3;
             --warning:       #ffd60a;
             --danger:        #ff2e63;
+            --focus-ring:      #00f0ff;
+            --focus-ring-halo: rgba(0, 240, 255, 0.4);
         }
 
         /* Tema "Dracula Vampírico" (preto, vinho e vermelho) */
@@ -75,6 +103,7 @@
             --bg-card-hover: #1c0910;
             --accent:        #d00000;
             --accent-hover:  #ff1a1a;
+            --accent-text:   #ff6b6b;
             --accent-2:      #600000;
             --accent-glow:   rgba(208, 0, 0, 0.4);
             --accent-soft:   rgba(208, 0, 0, 0.12);
@@ -82,13 +111,16 @@
             --on-success:    #0a0407;
             --text-primary:  #f1e6ea;
             --text-secondary:#c9a3b0;
-            --text-muted:    #8a6470;
+            --text-muted:    #ab8492;
             --border:        #600000;
+            --border-strong: #b03a3a;
             --star:          #3a1520;
             --star-filled:   #ffb703;
             --success:       #22c55e;
             --warning:       #eab308;
-            --danger:        #d00000;
+            --danger:        #ff4d4d;
+            --focus-ring:      #ff6b6b;
+            --focus-ring-halo: rgba(255, 107, 107, 0.4);
         }
 
         /* Tema "Midnight Neon" (azul noturno profundo com azul neon) */
@@ -99,6 +131,7 @@
             --bg-card-hover: #123152;
             --accent:        #00d2ff;
             --accent-hover:  #4fdcff;
+            --accent-text:   #4fdcff;
             --accent-2:      #0066ff;
             --accent-glow:   rgba(0, 210, 255, 0.4);
             --accent-soft:   rgba(0, 210, 255, 0.12);
@@ -106,13 +139,16 @@
             --on-success:    #050b14;
             --text-primary:  #e6f1ff;
             --text-secondary:#9fb8d4;
-            --text-muted:    #6b86a6;
+            --text-muted:    #85a3c4;
             --border:        #00d2ff;
+            --border-strong: #4fdcff;
             --star:          #14324f;
             --star-filled:   #00d2ff;
             --success:       #34d399;
             --warning:       #fbbf24;
             --danger:        #f87171;
+            --focus-ring:      #00d2ff;
+            --focus-ring-halo: rgba(0, 210, 255, 0.4);
         }
 
         html[data-theme="synthwave"] {
@@ -122,6 +158,7 @@
             --bg-card-hover: #33006b;
             --accent:        #ff9d00;
             --accent-hover:  #ffb340;
+            --accent-text:   #ffb340;
             --accent-2:      #ff71ce;
             --accent-glow:   rgba(255, 157, 0, 0.4);
             --accent-soft:   rgba(255, 157, 0, 0.12);
@@ -129,13 +166,16 @@
             --on-success:    #1a0b2e;
             --text-primary:  #ff71ce;
             --text-secondary:#c77dff;
-            --text-muted:    #9d6bb5;
+            --text-muted:    #b183c9;
             --border:        #ff71ce;
+            --border-strong: #ffb340;
             --star:          #4b2a6b;
             --star-filled:   #ffd60a;
             --success:       #00e5a0;
             --warning:       #ff9d00;
             --danger:        #ff4d6d;
+            --focus-ring:      #ffb340;
+            --focus-ring-halo: rgba(255, 179, 64, 0.4);
         }
 
         html[data-theme="matrix"] {
@@ -145,6 +185,7 @@
             --bg-card-hover: #0c2f13;
             --accent:        #00ffcc;
             --accent-hover:  #4dffe0;
+            --accent-text:   #4dffe0;
             --accent-2:      #00ff66;
             --accent-glow:   rgba(0, 255, 204, 0.4);
             --accent-soft:   rgba(0, 255, 204, 0.1);
@@ -152,13 +193,16 @@
             --on-success:    #03150f;
             --text-primary:  #00ff66;
             --text-secondary:#4ddb8a;
-            --text-muted:    #2f8a55;
+            --text-muted:    #4aa872;
             --border:        #00ff66;
+            --border-strong: #4dffe0;
             --star:          #14402a;
             --star-filled:   #aaff00;
             --success:       #00ff66;
             --warning:       #d4ff00;
             --danger:        #ff3b3b;
+            --focus-ring:      #00ffcc;
+            --focus-ring-halo: rgba(0, 255, 204, 0.4);
         }
 
         html[data-theme="minimal"] {
@@ -168,6 +212,7 @@
             --bg-card-hover: #222222;
             --accent:        #d4d4d8;
             --accent-hover:  #fafafa;
+            --accent-text:   #e5e5e5;
             --accent-2:      #a1a1aa;
             --accent-glow:   rgba(212, 212, 216, 0.25);
             --accent-soft:   rgba(212, 212, 216, 0.08);
@@ -175,13 +220,16 @@
             --on-success:    #0a0a0a;
             --text-primary:  #f5f5f5;
             --text-secondary:#a3a3a3;
-            --text-muted:    #6f6f6f;
+            --text-muted:    #909090;
             --border:        #2a2a2a;
+            --border-strong: #666666;
             --star:          #3a3a3a;
             --star-filled:   #e5e5e5;
             --success:       #4ade80;
             --warning:       #facc15;
             --danger:        #f87171;
+            --focus-ring:      #e5e5e5;
+            --focus-ring-halo: rgba(229, 229, 229, 0.35);
         }
 
         html[data-theme="red"] {
@@ -191,6 +239,7 @@
             --bg-card-hover: #2b1619;
             --accent:        #e11d2f;
             --accent-hover:  #ff3b4e;
+            --accent-text:   #ff7080;
             --accent-2:      #ff5c39;
             --accent-glow:   rgba(225, 29, 47, 0.4);
             --accent-soft:   rgba(225, 29, 47, 0.12);
@@ -198,13 +247,16 @@
             --on-success:    #ffffff;
             --text-primary:  #fdf0f0;
             --text-secondary:#c99a9d;
-            --text-muted:    #8f6a6d;
+            --text-muted:    #ab8588;
             --border:        #3a1a1e;
+            --border-strong: #d04048;
             --star:          #43242a;
             --star-filled:   #ffb703;
             --success:       #22c55e;
             --warning:       #eab308;
-            --danger:        #ef4444;
+            --danger:        #ff5a5a;
+            --focus-ring:      #ff7080;
+            --focus-ring-halo: rgba(255, 112, 128, 0.4);
         }
 
         html[data-theme="light"] {
@@ -215,6 +267,7 @@
             --bg-card-hover: #f1f1f7;
             --accent:        #6200ee;
             --accent-hover:  #7c3aed;
+            --accent-text:   #6200ee;
             --accent-2:      #a855f7;
             --accent-glow:   rgba(98, 0, 238, 0.28);
             --accent-soft:   rgba(98, 0, 238, 0.08);
@@ -222,21 +275,88 @@
             --on-success:    #ffffff;
             --text-primary:  #1a1a24;
             --text-secondary:#52525b;
-            --text-muted:    #71717a;
-            --border:        #e0e0e0;
+            --text-muted:    #5c5c66;
+            --border:        #d0d0d8;
+            --border-strong: #767676;
             --star:          #d4d4d8;
             --star-filled:   #f59e0b;
-            --success:       #16a34a;
-            --warning:       #d97706;
-            --danger:        #dc2626;
+            --success:       #15803d;
+            --warning:       #b45309;
+            --danger:        #b91c1c;
+            --focus-ring:      #6200ee;
+            --focus-ring-halo: rgba(98, 0, 238, 0.3);
         }
 
+        /* ===== Base tipográfica =====
+           Apenas pilhas de fontes do sistema — nenhum recurso externo
+           é descarregado (privacidade, desempenho e fiabilidade). */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
+            font-size: 1rem;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-wrap: break-word;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-wrap: balance;
+        }
+
+        /* Bloco de leitura longa (resenhas/sinopses): serif do sistema,
+           medida de linha confortável e entrelinha ligeiramente maior. */
+        .reading, .modal-synopsis, .review-text, .review-content {
+            font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+            line-height: 1.75;
+            max-width: var(--reading-max);
+        }
+
+        /* Link "saltar para o conteúdo" — visível apenas quando focado */
+        .skip-link {
+            position: absolute;
+            left: 1rem;
+            top: -100px;
+            z-index: 10000;
+            padding: 0.75rem 1.25rem;
+            background: var(--accent);
+            color: var(--on-accent);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            text-decoration: none;
+            transition: top 0.2s ease;
+        }
+        .skip-link:focus { top: 1rem; }
+
+        /* Texto apenas para leitores de ecrã */
+        .sr-only {
+            position: absolute !important;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ===== Movimento reduzido (WCAG 2.3.3) ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            html { scroll-behavior: smooth; }
         }
 
         /* ===== Toast ===== */
@@ -1897,6 +2017,74 @@
             font-size: 0.9rem;
             line-height: 1.7;
         }
+
+        /* ════════════════════════════════════════════════════════════
+           CAMADA DE ACESSIBILIDADE
+           Colocada no fim da folha para vencer a cascata sobre as
+           regras antigas (`outline: none`). Alvo: WCAG 2.2 nível AA.
+        ════════════════════════════════════════════════════════════ */
+
+        /* Indicador de foco consistente e bem visível — teclado apenas */
+        :focus-visible {
+            outline: 3px solid var(--focus-ring) !important;
+            outline-offset: 2px;
+        }
+        /* Rato/toque não desenham o anel */
+        :focus:not(:focus-visible) { outline: none !important; }
+
+        /* Campos de formulário: contorno sólido ao receber foco de teclado */
+        .search-input:focus-visible,
+        .form-input:focus-visible,
+        .form-textarea:focus-visible,
+        .filter-select:focus-visible,
+        #season-select:focus-visible {
+            outline: 3px solid var(--focus-ring) !important;
+            outline-offset: 2px;
+            border-color: var(--focus-ring);
+        }
+
+        /* Alvos de toque confortáveis nos controlos principais */
+        .stats-btn, .search-btn, .view-tab, .modal-tab,
+        .stats-close, .trailer-close, .btn {
+            min-height: var(--target-min);
+        }
+        /* Ícones sobre a capa: mínimo AA de 24px, sem romper o layout */
+        .icon-btn { min-width: 28px; min-height: 28px; }
+
+        /* Cartões: a navegação por teclado espelha o realce do hover */
+        .anime-card:focus-within,
+        .rec-card:focus-visible {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--accent-glow);
+        }
+
+        /* O título do cartão é o controlo de teclado (reset de <button>) */
+        .anime-card-open {
+            appearance: none;
+            -webkit-appearance: none;
+            background: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font: inherit;
+            color: inherit;
+            text-align: left;
+            cursor: pointer;
+        }
+        .anime-card-open:hover { color: var(--accent-text); }
+
+        /* Toast é uma região viva: leitores de ecrã anunciam a mensagem */
+        .toast { text-align: left; max-width: min(90vw, 30rem); }
+
+        /* Utilizadores que pedem mais contraste recebem contornos reforçados */
+        @media (prefers-contrast: more) {
+            .anime-card, .view-tab, .filter-select, .form-input,
+            .form-textarea, #season-select, .search-input, .rec-card {
+                border-color: var(--border-strong);
+            }
+        }
     </style>
     <script>
         /* Aplica o tema guardado antes do render para evitar "flash" de tema */
@@ -1913,21 +2101,25 @@
 </head>
 <body>
 
-    <!-- Efeito "sangue escorrendo" do tema Dracula Vampírico -->
-    <div id="blood-drip-container"></div>
+    <!-- Salto direto para o conteúdo — primeiro elemento focável da página -->
+    <a href="#main" class="skip-link">Saltar para o conteúdo principal</a>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <!-- Efeito "sangue escorrendo" do tema Dracula Vampírico -->
+    <div id="blood-drip-container" aria-hidden="true"></div>
+
+    <!-- Toast — região viva para leitores de ecrã -->
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Header -->
     <header>
         <div class="header-content">
-            <a href="#" class="logo">AniReview</a>
-            <div class="search-container">
-                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <a href="#" class="logo" aria-label="AniReview — início">AniReview</a>
+            <div class="search-container" role="search">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                 </svg>
-                <input type="text" class="search-input" id="searchInput" placeholder="Buscar animes...">
+                <label class="sr-only" for="searchInput">Buscar animes</label>
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar animes..." autocomplete="off">
                 <button class="search-btn" onclick="searchAnimes()">Buscar</button>
             </div>
 
@@ -1968,7 +2160,7 @@
             <!-- Seletor de tema (Passo 3) -->
             <div class="theme-select">
                 <button class="stats-btn theme-btn" id="themeBtn" onclick="toggleThemeMenu(event)"
-                        title="Alterar tema" aria-label="Alterar tema" aria-haspopup="true" aria-expanded="false">
+                        aria-label="Alterar tema" aria-expanded="false" aria-controls="themeMenu">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="13.5" cy="6.5"  r="2.5"/>
                         <circle cx="17.5" cy="14.5" r="2.5"/>
@@ -1977,16 +2169,16 @@
                     </svg>
                     <span class="stats-btn-label">Tema</span>
                 </button>
-                <div class="theme-menu" id="themeMenu" role="menu" aria-labelledby="themeBtn">
-                    <button class="theme-option" role="menuitem" data-theme="purple"    onclick="setTheme('purple')"    style="--sw1:#7257fa;--sw2:#a855f7;"><span class="theme-swatch"></span>Roxo Dark</button>
-                    <button class="theme-option" role="menuitem" data-theme="cyberpunk" onclick="setTheme('cyberpunk')" style="--sw1:#0d0221;--sw2:#ff0055;"><span class="theme-swatch"></span>Cyberpunk Neon</button>
-                    <button class="theme-option" role="menuitem" data-theme="dracula"   onclick="setTheme('dracula')"   style="--sw1:#1a0812;--sw2:#d00000;"><span class="theme-swatch"></span>Dracula Vampírico</button>
-                    <button class="theme-option" role="menuitem" data-theme="midnight"  onclick="setTheme('midnight')"  style="--sw1:#0a192f;--sw2:#00d2ff;"><span class="theme-swatch"></span>Midnight Neon</button>
-                    <button class="theme-option" role="menuitem" data-theme="synthwave" onclick="setTheme('synthwave')" style="--sw1:#2b1055;--sw2:#ff9d00;"><span class="theme-swatch"></span>Synthwave Sunset</button>
-                    <button class="theme-option" role="menuitem" data-theme="matrix"    onclick="setTheme('matrix')"    style="--sw1:#0a2910;--sw2:#00ff66;"><span class="theme-swatch"></span>Emerald Matrix</button>
-                    <button class="theme-option" role="menuitem" data-theme="minimal"   onclick="setTheme('minimal')"   style="--sw1:#d4d4d8;--sw2:#a1a1aa;"><span class="theme-swatch"></span>Minimalista Escuro</button>
-                    <button class="theme-option" role="menuitem" data-theme="red"       onclick="setTheme('red')"       style="--sw1:#e11d2f;--sw2:#ff5c39;"><span class="theme-swatch"></span>Vermelho Anime</button>
-                    <button class="theme-option" role="menuitem" data-theme="light"     onclick="setTheme('light')"     style="--sw1:#f4f4f9;--sw2:#6200ee;"><span class="theme-swatch"></span>Claro</button>
+                <div class="theme-menu" id="themeMenu" role="group" aria-label="Escolher tema">
+                    <button class="theme-option" type="button" aria-pressed="true"  data-theme="purple"    onclick="setTheme('purple')"    style="--sw1:#7257fa;--sw2:#a855f7;"><span class="theme-swatch" aria-hidden="true"></span>Roxo Dark</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="cyberpunk" onclick="setTheme('cyberpunk')" style="--sw1:#0d0221;--sw2:#ff0055;"><span class="theme-swatch" aria-hidden="true"></span>Cyberpunk Neon</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="dracula"   onclick="setTheme('dracula')"   style="--sw1:#1a0812;--sw2:#d00000;"><span class="theme-swatch" aria-hidden="true"></span>Dracula Vampírico</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="midnight"  onclick="setTheme('midnight')"  style="--sw1:#0a192f;--sw2:#00d2ff;"><span class="theme-swatch" aria-hidden="true"></span>Midnight Neon</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="synthwave" onclick="setTheme('synthwave')" style="--sw1:#2b1055;--sw2:#ff9d00;"><span class="theme-swatch" aria-hidden="true"></span>Synthwave Sunset</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="matrix"    onclick="setTheme('matrix')"    style="--sw1:#0a2910;--sw2:#00ff66;"><span class="theme-swatch" aria-hidden="true"></span>Emerald Matrix</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="minimal"   onclick="setTheme('minimal')"   style="--sw1:#d4d4d8;--sw2:#a1a1aa;"><span class="theme-swatch" aria-hidden="true"></span>Minimalista Escuro</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="red"       onclick="setTheme('red')"       style="--sw1:#e11d2f;--sw2:#ff5c39;"><span class="theme-swatch" aria-hidden="true"></span>Vermelho Anime</button>
+                    <button class="theme-option" type="button" aria-pressed="false" data-theme="light"     onclick="setTheme('light')"     style="--sw1:#f4f4f9;--sw2:#6200ee;"><span class="theme-swatch" aria-hidden="true"></span>Claro</button>
                 </div>
             </div>
         </div>
@@ -1995,9 +2187,12 @@
     <!-- Barra de Vistas: Todos / Favoritos / Watchlist (Passo 1) -->
     <nav class="view-bar" aria-label="Alternar entre listas">
         <div class="view-bar-inner">
-            <button class="view-tab active" data-view="all"       onclick="setView('all', this)">🌐 Todos</button>
-            <button class="view-tab"        data-view="favorites" onclick="setView('favorites', this)">❤️ Meus Favoritos <span class="view-count" id="favCount">0</span></button>
-            <button class="view-tab"        data-view="watchlist" onclick="setView('watchlist', this)">🔖 Minha Watchlist <span class="view-count" id="wlCount">0</span></button>
+            <button class="view-tab active" data-view="all" aria-pressed="true"
+                    onclick="setView('all', this)"><span aria-hidden="true">🌐</span> Todos</button>
+            <button class="view-tab" data-view="favorites" aria-pressed="false"
+                    onclick="setView('favorites', this)"><span aria-hidden="true">❤️</span> Meus Favoritos <span class="view-count" id="favCount" aria-hidden="true">0</span></button>
+            <button class="view-tab" data-view="watchlist" aria-pressed="false"
+                    onclick="setView('watchlist', this)"><span aria-hidden="true">🔖</span> Minha Watchlist <span class="view-count" id="wlCount" aria-hidden="true">0</span></button>
         </div>
     </nav>
 
@@ -2038,11 +2233,12 @@
     </nav>
 
     <!-- Conteúdo -->
-    <main>
-        <section class="catalog-section">
+    <main id="main" tabindex="-1">
+        <section class="catalog-section" aria-labelledby="catalogTitle">
             <div class="section-header">
-                <h2>Catálogo</h2>
+                <h2 id="catalogTitle">Catálogo</h2>
             </div>
+            <p class="sr-only" id="catalogStatus" role="status" aria-live="polite"></p>
             <div class="anime-grid" id="animeGrid">
                 <!-- Skeleton inicial — substituído por loadPopularAnimes() -->
                 <div class="skeleton-card" aria-hidden="true"><div class="skeleton skeleton-card-image"></div><div class="skeleton-card-info"><div class="skeleton skeleton-card-title"></div><div class="skeleton skeleton-card-meta"></div></div></div>
@@ -2113,13 +2309,15 @@
             </div>
 
             <!-- Tabs -->
-            <div class="modal-tabs">
-                <button class="modal-tab active" id="tabReview"   onclick="switchTab('review')">✍️ Resenha</button>
-                <button class="modal-tab"         id="tabEpisodes" onclick="switchTab('episodes')">🎬 Episódios</button>
+            <div class="modal-tabs" role="tablist" aria-label="Detalhes do anime">
+                <button class="modal-tab active" id="tabReview" role="tab" aria-selected="true"
+                        aria-controls="panelReview" onclick="switchTab('review')"><span aria-hidden="true">✍️</span> Resenha</button>
+                <button class="modal-tab" id="tabEpisodes" role="tab" aria-selected="false"
+                        aria-controls="panelEpisodes" onclick="switchTab('episodes')"><span aria-hidden="true">🎬</span> Episódios</button>
             </div>
 
             <!-- Painel Resenha -->
-            <div id="panelReview">
+            <div id="panelReview" role="tabpanel" aria-labelledby="tabReview" tabindex="0">
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Sua Nota</label>
@@ -2148,7 +2346,7 @@
             </div>
 
             <!-- Painel Episódios -->
-            <div id="panelEpisodes" style="display:none;">
+            <div id="panelEpisodes" role="tabpanel" aria-labelledby="tabEpisodes" tabindex="0" style="display:none;">
                 <div class="episodes-panel">
                     <div class="form-group" style="margin-bottom:1rem;">
                         <label class="form-label" for="epUsernameInput" style="font-size:0.85rem;color:var(--text-secondary);">
@@ -2438,7 +2636,9 @@
         if (!THEMES.includes(theme)) theme = 'purple';
         document.documentElement.setAttribute('data-theme', theme);
         document.querySelectorAll('.theme-option').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === theme);
+            const isActive = btn.dataset.theme === theme;
+            btn.classList.toggle('active', isActive);
+            btn.setAttribute('aria-pressed', String(isActive));   // estado exposto a leitores de ecrã
         });
         setBats(theme === 'dracula');   // morcegos só no Dracula Vampírico
     }
@@ -2865,8 +3065,15 @@
     /** Muda a vista activa e re-renderiza */
     function setView(view, btn) {
         _activeView = view;
-        document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-        (btn || document.querySelector(`.view-tab[data-view="${view}"]`))?.classList.add('active');
+        document.querySelectorAll('.view-tab').forEach(t => {
+            t.classList.remove('active');
+            t.setAttribute('aria-pressed', 'false');
+        });
+        const target = btn || document.querySelector(`.view-tab[data-view="${view}"]`);
+        if (target) {
+            target.classList.add('active');
+            target.setAttribute('aria-pressed', 'true');   // estado exposto a leitores de ecrã
+        }
         renderActiveView();
     }
 
@@ -2907,8 +3114,7 @@
             const wl    = isInWatchlist(c.id) ? 'active' : '';
             const badges = platformBadgesHtml(c.id);
             return `
-            <div class="anime-card" onclick="openModal('${c.id}')" tabindex="0"
-                 onkeypress="if(event.key==='Enter') openModal('${c.id}')">
+            <div class="anime-card" data-id="${c.id}" onclick="openModal('${c.id}')">
                 <div class="anime-card-image-container">
                     <img class="anime-card-image" src="${cover}" alt="${title}" loading="lazy">
                     ${badges ? `<div class="card-badges">${badges}</div>` : ''}
@@ -2926,16 +3132,25 @@
                         </svg>${c.score}</div>` : ''}
                 </div>
                 <div class="anime-card-info">
-                    <div class="anime-card-title">${title}</div>
+                    <button type="button" class="anime-card-title anime-card-open"
+                            aria-label="Ver detalhes de ${title}">${title}</button>
                     <div class="anime-card-meta">${c.subtype} • ${c.year}</div>
                 </div>
             </div>`;
         }).join('');
+        announce(`${cards.length} ${cards.length === 1 ? 'anime encontrado' : 'animes encontrados'}`);
+    }
+
+    /** Anuncia uma mensagem a leitores de ecrã sem a mostrar visualmente */
+    function announce(msg) {
+        const el = document.getElementById('catalogStatus');
+        if (el) el.textContent = msg;
     }
 
     function setGridEmpty(icon, msg) {
         document.getElementById('animeGrid').innerHTML =
-            `<div class="empty-state"><div class="empty-icon">${icon}</div><div>${msg}</div></div>`;
+            `<div class="empty-state"><div class="empty-icon" aria-hidden="true">${icon}</div><div>${msg}</div></div>`;
+        announce(msg);
     }
 
     function setGridLoading(msg = '') {
@@ -3909,9 +4124,9 @@
             const meta  = [a.subtype, year].filter(Boolean).join(' • ');
             return `
             <div class="rec-card" role="button" tabindex="0"
-                 title="${title}"
+                 aria-label="Ver detalhes de ${title}"
                  onclick="openModal('${item.id}')"
-                 onkeypress="if(event.key==='Enter') openModal('${item.id}')">
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${item.id}');}">
                 <div class="rec-card-image-container">
                     <img class="rec-card-image" src="${cover}" alt="${title}" loading="lazy">
                     ${score ? `<div class="rec-card-score">★ ${score}</div>` : ''}
@@ -3931,6 +4146,9 @@
         document.getElementById('panelEpisodes').style.display = isEp ? '' : 'none';
         document.getElementById('tabReview').classList.toggle('active',  !isEp);
         document.getElementById('tabEpisodes').classList.toggle('active', isEp);
+        // Estado das tabs exposto a tecnologias de apoio (role="tab")
+        document.getElementById('tabReview').setAttribute('aria-selected',   isEp ? 'false' : 'true');
+        document.getElementById('tabEpisodes').setAttribute('aria-selected', isEp ? 'true'  : 'false');
 
         if (isEp && currentAnime && !document.getElementById('season-select')) {
             initSeasonSelect();
@@ -4532,6 +4750,69 @@
         el.offsetHeight;
         el.style.animation = 'shake 0.4s ease';
     }
+
+    /* ════════════════════════════════════════════════════════════
+       ACESSIBILIDADE — GESTÃO DE FOCO NOS DIÁLOGOS (WCAG 2.4.3)
+       Recorda quem abriu o diálogo, prende o Tab lá dentro e
+       devolve o foco ao elemento de origem quando fecha.
+    ════════════════════════════════════════════════════════════ */
+    const _dialogStack = [];
+    let _lastFocusedOutside = null;
+
+    function _focusableIn(root) {
+        return Array.from(root.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), ' +
+            'select:not([disabled]), textarea:not([disabled]), iframe, ' +
+            '[tabindex]:not([tabindex="-1"])'
+        )).filter(el => el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement);
+    }
+
+    // Guarda o último elemento focado fora de qualquer diálogo
+    document.addEventListener('focusin', e => {
+        const top = _dialogStack[_dialogStack.length - 1];
+        if (!top || !top.overlay.contains(e.target)) _lastFocusedOutside = e.target;
+    });
+
+    function _onDialogOpened(overlay) {
+        _dialogStack.push({ overlay, opener: _lastFocusedOutside });
+        // Se nada dentro do diálogo recebeu foco, foca o primeiro controlo
+        if (!overlay.contains(document.activeElement)) {
+            const items = _focusableIn(overlay);
+            (items[0] || overlay).focus();
+        }
+    }
+
+    function _onDialogClosed(overlay) {
+        const i = _dialogStack.findIndex(d => d.overlay === overlay);
+        if (i === -1) return;
+        const { opener } = _dialogStack.splice(i, 1)[0];
+        if (opener && typeof opener.focus === 'function' && document.contains(opener)) {
+            opener.focus();
+        }
+    }
+
+    // Observa a abertura/fecho (.active) de cada modal e gere o foco
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        let wasOpen = overlay.classList.contains('active');
+        new MutationObserver(() => {
+            const isOpen = overlay.classList.contains('active');
+            if (isOpen === wasOpen) return;
+            wasOpen = isOpen;
+            if (isOpen) _onDialogOpened(overlay); else _onDialogClosed(overlay);
+        }).observe(overlay, { attributes: true, attributeFilter: ['class'] });
+    });
+
+    // Prende o Tab dentro do diálogo aberto mais recente
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Tab') return;
+        const top = _dialogStack[_dialogStack.length - 1];
+        if (!top) return;
+        const items = _focusableIn(top.overlay);
+        if (!items.length) { e.preventDefault(); return; }
+        const first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
 
     /* Fechar modal com clique fora ou Escape */
     document.getElementById('animeModal').addEventListener('click', e => {
