@@ -1,38 +1,40 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# AniReview — imagem Docker para Spring Boot (Java 17)
-# Build multi-etapa: compila com Maven/JDK 17 e gera uma imagem final leve
-# apenas com o JRE e o JAR executavel, pronta a correr no Render.
+# AniReview — Docker image for a Spring Boot application (Java 17)
 #
-# Este Dockerfile esta na RAIZ do repositorio; o projeto Maven vive na
-# subpasta anime-platform/, por isso os caminhos de copia sao relativos a ela.
+# Multi-stage build:
+#   stage 1 (build)   -> compiles the project with Maven + JDK 17
+#   stage 2 (runtime) -> keeps only the JRE and the executable JAR
+#
+# This Dockerfile lives at the repository root; the Maven project lives in
+# the "anime-platform/" subfolder, so all copy paths point to that folder.
 # ═══════════════════════════════════════════════════════════════════════════
 
-# ── Etapa 1: build ─────────────────────────────────────────────────────────
+# ── Stage 1: build ─────────────────────────────────────────────────────────
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiar primeiro apenas o pom.xml para aproveitar a cache de camadas do
-# Docker: as dependencias so sao descarregadas de novo se o pom.xml mudar.
+# Copy only the POM first so Docker can cache the downloaded dependencies.
+# They are downloaded again only when pom.xml changes.
 COPY anime-platform/pom.xml .
 RUN mvn -B dependency:go-offline
 
-# Copiar o codigo fonte e empacotar o JAR executavel do Spring Boot.
+# Copy the sources and package the executable Spring Boot JAR.
 COPY anime-platform/src ./src
 RUN mvn -B clean package -DskipTests
 
-# ── Etapa 2: runtime ───────────────────────────────────────────────────────
+# ── Stage 2: runtime ───────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Correr como utilizador nao-root (boa pratica de seguranca em contentores).
+# Run as a non-root user (container security best practice).
 RUN addgroup -S app && adduser -S app -G app
 
-# Copiar apenas o JAR final da etapa de build.
+# Copy only the final JAR produced by the build stage.
 COPY --from=build /app/target/anime-platform-*.jar app.jar
 RUN chown -R app:app /app
 USER app
 
-# O Render injeta a porta a usar na variavel PORT; localmente usa-se 8080.
+# Render injects the port to use through the PORT variable; locally 8080.
 EXPOSE 8080
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0"
 
