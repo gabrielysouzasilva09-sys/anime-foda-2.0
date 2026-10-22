@@ -8,7 +8,20 @@
      - authHeaders()                  → cabeçalhos com o token para pedidos autenticados
    ════════════════════════════════════════════════════════════════ */
 
-var API_BASE  = 'http://localhost:8080';
+/* Base da API (Spring Boot).
+   Em produção o front-end é servido pelo próprio Spring Boot, logo a API
+   vive na mesma origem. Em desenvolvimento local o back-end corre em
+   http://localhost:8080 — mesmo quando a página é aberta via file:// ou
+   servida por um servidor estático (ex.: preview numa porta diferente). */
+var API_BASE = (function () {
+    var loc   = window.location;
+    var local = loc.protocol === 'file:' ||
+                loc.hostname === 'localhost' ||
+                loc.hostname === '127.0.0.1';
+    if (local && loc.port !== '8080') return 'http://localhost:8080';
+    return loc.origin;
+})();
+
 var TOKEN_KEY = 'anireview_token';
 var USER_KEY  = 'anireview_user';
 
